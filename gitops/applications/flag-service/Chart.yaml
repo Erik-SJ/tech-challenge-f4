@@ -1,0 +1,7 @@
+apiVersion: v2
+name: flag-service
+description: Helm Chart do flag-service
+type: application
+
+version: 0.1.0
+appVersion: "1.0.0"
