@@ -5,35 +5,34 @@ metadata:
   namespace: argocd
 
 spec:
-
   generators:
     - git:
-        repoURL: https://github.com/Erik-SJ/tech-challenge-f3.git
+        repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
         revision: main
         directories:
-          - path: gitops/addons/*
+          - path: gitops/addons/observability
 
   template:
-
     metadata:
       name: 'addon-{{path.basename}}'
-
       annotations:
         argocd.argoproj.io/sync-wave: "0"
 
     spec:
-      project: tech-challenge-f3
+      project: tech-challenge-f4
 
       source:
-        repoURL: https://github.com/Erik-SJ/tech-challenge-f3.git
+        repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
         targetRevision: main
         path: '{{path}}'
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: argocd
+        namespace: observability
 
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

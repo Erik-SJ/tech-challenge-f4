@@ -5,9 +5,9 @@ metadata:
   namespace: argocd
   
 spec:
-  project: tech-challenge-f3
+  project: tech-challenge-f4
   source:
-    repoURL: https://github.com/Erik-SJ/tech-challenge-f3.git
+    repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
     targetRevision: main
     path: gitops/argocd
   destination:
