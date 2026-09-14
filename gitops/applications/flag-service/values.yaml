@@ -1,0 +1,26 @@
+namespace: flag-service
+
+replicaCount: 1
+
+image:
+  repository: 712979978195.dkr.ecr.us-east-1.amazonaws.com/flag-service
+  tag: "373ea4f"
+  pullPolicy: Always
+
+service:
+  port: 80
+  targetPort: 8002
+
+secret:
+  name: flag-secret
+
+externalSecret:
+  key: flag-service  
+
+configMap:
+  name: flag-config
+  data:
+    AUTH_SERVICE_URL: "http://172.20.200.121"
+    
+autoscaling:
+  enabled: false  

@@ -1,0 +1,201 @@
+name: "[CI] Analytics Service"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: helm-values-update
+  queue: max
+  cancel-in-progress: false   
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/analytics-service/**"
+      - ".github/workflows/analytics-service.yml"
+
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/analytics-service/**"
+      - ".github/workflows/analytics-service.yml"
+env:
+  SERVICE_NAME: analytics-service
+  SERVICE_PATH: apps/analytics-service
+  AWS_REGION: us-east-1
+
+jobs:
+
+  code-validation:
+    name: Code Validation  
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.SERVICE_PATH }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python  
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies    
+        run: pip install -r requirements.txt
+
+      - name: Verify Python syntax
+        run: python -m py_compile app.py
+
+  code-quality:
+    name: Code Quality
+    needs: code-validation
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.SERVICE_PATH }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Flake8
+        run: pip install flake8
+
+      - name: Run Flake8
+        run: flake8 app.py
+  
+  security-analysis:
+    name: Security Analysis
+    needs: code-validation
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.SERVICE_PATH }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Install Bandit
+        run: pip install bandit
+  
+      - name: Run SAST - Bandit
+        run: bandit -r .
+  
+      - name: Run SCA - Trivy dependency scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: ${{ env.SERVICE_PATH }}
+          severity: CRITICAL
+          exit-code: "1"
+        
+  build-and-push:
+    name: Docker Build, Scan and Push
+    needs:
+      - code-quality
+      - security-analysis
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Generate image tag
+        run: |
+          echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+  
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+  
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+  
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t $SERVICE_NAME:$IMAGE_TAG \
+            $SERVICE_PATH
+  
+      - name: Scan Docker image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.SERVICE_NAME }}:${{ env.IMAGE_TAG }}
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+  
+      - name: Tag Docker image
+        run: |
+          docker tag \
+            $SERVICE_NAME:$IMAGE_TAG \
+            ${{ secrets.ECR_REGISTRY }}/$SERVICE_NAME:$IMAGE_TAG
+  
+      - name: Push Docker image to ECR
+        run: |
+          docker push \
+            ${{ secrets.ECR_REGISTRY }}/$SERVICE_NAME:$IMAGE_TAG
+
+  update-helm-values:
+    name: Update Helm Values
+    needs:
+      - build-and-push
+
+    if: github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate image tag
+        run: |
+          echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Update Helm values
+        run: |
+          sed -i "s/^  tag:.*/  tag: \"${IMAGE_TAG}\"/" \
+          gitops/applications/${SERVICE_NAME}/values.yaml
+
+      - name: Commit Helm values update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add gitops/applications/${SERVICE_NAME}/values.yaml
+
+          git diff --cached --quiet || \
+          git commit -m "ci(${SERVICE_NAME}): update image tag to ${IMAGE_TAG}"
+
+      - name: Sync with remote branch
+        run: |
+          git pull --rebase origin main
+
+      - name: Push changes
+        run: |
+          git push origin main
+
+      - name: Deployment information
+        run: |
+          echo "Helm values updated successfully."
+          echo "ArgoCD will automatically synchronize the application."

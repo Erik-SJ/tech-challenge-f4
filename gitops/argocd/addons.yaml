@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addons
+  namespace: argocd
+
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
+        revision: main
+        directories:
+          - path: gitops/addons/observability
+
+  template:
+    metadata:
+      name: 'addon-{{path.basename}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+
+    spec:
+      project: tech-challenge-f4
+
+      source:
+        repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
+        targetRevision: main
+        path: '{{path}}'
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: observability
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

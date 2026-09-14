@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.configMap.name }}"
+  namespace: "{{ .Values.namespace }}"
+data:
+  AUTH_SERVICE_URL: {{ .Values.configMap.data.AUTH_SERVICE_URL }}

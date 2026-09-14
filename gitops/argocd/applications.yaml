@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: tech-challenge-f3-services
+  namespace: argocd
+
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/Erik-SJ/tech-challenge-f3.git
+        revision: main
+        directories:
+          - path: gitops/applications/*
+
+  template:
+    metadata:
+      name: "{{path.basename}}"
+      
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+
+    spec:
+      project: tech-challenge-f3
+
+      source:
+        repoURL: https://github.com/Erik-SJ/tech-challenge-f3.git
+        targetRevision: main
+        path: "{{path}}"
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{path.basename}}"
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true  

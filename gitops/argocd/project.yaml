@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: tech-challenge-f4
+  namespace: argocd
+
+spec:
+  description: Projeto Tech Challenge F4
+
+  sourceRepos:
+    - https://github.com/Erik-SJ/tech-challenge-f4.git
+    - https://charts.external-secrets.io
+
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+
+  orphanedResources:
+    warn: false
+
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'

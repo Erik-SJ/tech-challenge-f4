@@ -1,0 +1,24 @@
+# Environment files
+.env
+.env.*
+apps/.env
+
+# Kubernetes private secrets
+gitops/private/aws-credentials.yaml
+
+# Terraform
+iac/terraform/.terraform/
+iac/terraform/*.tfstate
+iac/terraform/*.tfstate.*
+iac/terraform/.terraform.lock.hcl
+
+# Python
+__pycache__/
+*.pyc
+
+# Go
+*.exe
+
+# IDE
+.vscode/
+.idea/

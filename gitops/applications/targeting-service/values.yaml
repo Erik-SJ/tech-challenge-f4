@@ -1,0 +1,26 @@
+namespace: targeting-service
+
+replicaCount: 1
+
+image:
+  repository: 712979978195.dkr.ecr.us-east-1.amazonaws.com/targeting-service
+  tag: "373ea4f"
+  pullPolicy: Always
+
+service:
+  port: 80
+  targetPort: 8003
+
+secret:
+  name: targeting-secret
+
+externalSecret:
+  key: targeting-service  
+
+configMap:
+  name: targeting-config
+  data:
+    AUTH_SERVICE_URL: "http://172.20.62.194"
+    
+autoscaling:
+  enabled: false  
