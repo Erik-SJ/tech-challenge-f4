@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.configMap.name }}"
+  namespace: "{{ .Values.namespace }}"
+data:
+  AWS_DYNAMODB_TABLE: "{{ .Values.configMap.data.AWS_DYNAMODB_TABLE }}"

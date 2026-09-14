@@ -1,0 +1,37 @@
+kube-prometheus-stack:
+  grafana:
+    enabled: true
+
+    adminPassword: "admin"
+
+    service:
+      type: ClusterIP
+
+    additionalDataSources:
+      - name: Loki
+        type: loki
+        url: http://loki.observability.svc.cluster.local:3100
+        access: proxy
+        isDefault: false
+
+  prometheus:
+    enabled: true
+
+    service:
+      type: ClusterIP
+
+    prometheusSpec:
+      retention: 7d
+
+      serviceMonitorSelectorNilUsesHelmValues: false
+
+      podMonitorSelectorNilUsesHelmValues: false
+
+  alertmanager:
+    enabled: true
+
+  kubeStateMetrics:
+    enabled: true
+
+  nodeExporter:
+    enabled: true

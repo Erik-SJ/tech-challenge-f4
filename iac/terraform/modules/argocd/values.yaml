@@ -1,0 +1,11 @@
+server:
+  service:
+    type: ClusterIP
+
+configs:
+  params:
+    controller.diff.server.side: "true"
+    
+  cm:
+    timeout.reconciliation: 20s
+    timeout.reconciliation.jitter: 0s  

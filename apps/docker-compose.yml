@@ -1,0 +1,310 @@
+services:
+  ### AUTH-SERVICE ###
+  auth-service:
+    build:
+     context: auth-service
+     dockerfile: Dockerfile
+
+    container_name: auth-service
+    restart: always
+
+    ports:
+      - "8001:8001"
+
+    networks:
+      - microservices-net
+  
+    environment:
+      - DATABASE_URL=${DATABASE_URL_AUTH}
+      - MASTER_KEY=${MASTER_KEY_AUTH}
+  
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://auth-service:8001/health"]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  auth-db:
+    image: postgres:13
+    container_name: auth-db
+    restart: always
+
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_AUTH}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_AUTH}
+      - POSTGRES_DB=${POSTGRES_DB_AUTH}
+
+    ports:
+      - "7001:7001"
+
+    networks:
+      - microservices-net  
+    
+    volumes:
+      - postgres-auth-data:/var/lib/postgresql/data/
+
+      # Script para criar a tabela "api_keys"
+      - ./auth-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER_AUTH} -d ${POSTGRES_DB_AUTH}"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  ### FLAG-SERVICE ###   
+  flag-service:
+    build:
+     context: flag-service
+     dockerfile: Dockerfile
+
+    container_name: flag-service
+    restart: always
+
+    ports:
+      - "8002:8002"
+
+    networks:
+      - microservices-net
+  
+    environment:
+      - DATABASE_URL=${DATABASE_URL_FLAG}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+  
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      flag-db:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://flag-service:8002/health')"
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  flag-db:
+    image: postgres:13
+    container_name: flag-db
+    restart: always
+
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_FLAG}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_FLAG}
+      - POSTGRES_DB=${POSTGRES_DB_FLAG}
+
+    ports:
+      - "7002:7002"
+
+    networks:
+      - microservices-net  
+    
+    volumes:
+      - postgres-flag-data:/var/lib/postgresql/data/
+
+      # Script para criar a tabela "flags"
+      - ./flag-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER_FLAG} -d ${POSTGRES_DB_FLAG}"]
+      interval: 5s
+      timeout: 5s
+      retries: 3    
+
+ ### TARGETING-SERVICE ###   
+  targeting-service:
+    build:
+     context: targeting-service
+     dockerfile: Dockerfile
+
+    container_name: targeting-service
+    restart: always
+
+    ports:
+      - "8003:8003"
+
+    networks:
+      - microservices-net
+  
+    environment:
+      - DATABASE_URL=${DATABASE_URL_TARGETING}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+  
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      targeting-db:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://targeting-service:8003/health')"
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  targeting-db:
+    image: postgres:13
+    container_name: targeting-db
+    restart: always
+
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_TARGETING}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_TARGETING}
+      - POSTGRES_DB=${POSTGRES_DB_TARGETING}
+
+    ports:
+      - "7003:7003"
+
+    networks:
+      - microservices-net  
+    
+    volumes:
+      - postgres-targeting-data:/var/lib/postgresql/data/
+
+      # Script para criar a tabela "targeting_rules"
+      - ./targeting-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER_TARGETING} -d ${POSTGRES_DB_TARGETING}"]
+      interval: 5s
+      timeout: 5s
+      retries: 3 
+
+ ### EVALUATION-SERVICE ###   
+  evaluation-service:
+    build:
+     context: evaluation-service
+     dockerfile: Dockerfile
+
+    container_name: evaluation-service
+    restart: always
+
+    ports:
+      - "8004:8004"
+
+    networks:
+      - microservices-net
+  
+    environment:
+      - REDIS_URL=${REDIS_URL}
+      - FLAG_SERVICE_URL=${FLAG_SERVICE_URL}  
+      - TARGETING_SERVICE_URL=${TARGETING_SERVICE_URL}
+      - SERVICE_API_KEY=${SERVICE_API_KEY_EVALUATION}
+      - AWS_SQS_URL=${AWS_SQS_URL}
+      - AWS_REGION=${AWS_REGION} 
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+  
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      flag-service:
+        condition: service_healthy
+      targeting-service:
+        condition: service_healthy
+      evaluation-redis:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://evaluation-service:8004/health"]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  evaluation-redis:
+    image: redis:7-alpine
+    container_name: evaluation-redis
+    restart: always
+
+    ports:
+      - "7004:7004"
+
+    command: redis-server --appendonly yes  
+
+    networks:
+      - microservices-net  
+    
+    volumes:
+      - redis-evaluation-data:/var/lib/evaluation/data/
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+### ANALYTICS-SERVICE ###   
+  analytics-service:
+    build:
+     context: analytics-service
+     dockerfile: Dockerfile
+
+    container_name: analytics-service
+    restart: always
+
+    ports:
+      - "8005:8005"
+
+    networks:
+      - microservices-net
+  
+    environment:
+      - AWS_SQS_URL=${AWS_SQS_URL}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_DYNAMODB_TABLE=${AWS_DYNAMODB_TABLE} 
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+  
+    depends_on:
+      evaluation-service:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://analytics-service:8005/health')"
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+    volumes:
+      - analytics-service-data:/var/lib/analytics/data/
+
+
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  postgres-auth-data:
+  postgres-flag-data:
+  postgres-targeting-data:
+  redis-evaluation-data:
+  analytics-service-data:
