@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: tech-challenge-f3-services
+  name: tech-challenge-f4-services
   namespace: argocd
 
 spec:
   generators:
     - git:
-        repoURL: https://github.com/Erik-SJ/tech-challenge-f3.git
+        repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
         revision: main
         directories:
           - path: gitops/applications/*
@@ -15,15 +15,14 @@ spec:
   template:
     metadata:
       name: "{{path.basename}}"
-      
       annotations:
         argocd.argoproj.io/sync-wave: "0"
 
     spec:
-      project: tech-challenge-f3
+      project: tech-challenge-f4
 
       source:
-        repoURL: https://github.com/Erik-SJ/tech-challenge-f3.git
+        repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
         targetRevision: main
         path: "{{path}}"
 
@@ -38,4 +37,4 @@ spec:
 
         syncOptions:
           - CreateNamespace=true
-          - ServerSideApply=true  
+          - ServerSideApply=true

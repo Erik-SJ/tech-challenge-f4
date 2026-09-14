@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability-namespace
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+
+spec:
+  project: tech-challenge-f4
+
+  source:
+    repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
+    targetRevision: main
+    path: gitops/addons/observability
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
