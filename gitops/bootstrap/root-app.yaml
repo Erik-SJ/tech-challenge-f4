@@ -8,7 +8,7 @@ spec:
   project: tech-challenge-f4
   source:
     repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
-    targetRevision: develop
+    targetRevision: main
     path: gitops/argocd
   destination:
     server: https://kubernetes.default.svc
