@@ -13,7 +13,7 @@ kube-prometheus-stack:
     additionalDataSources:
       - name: Loki
         type: loki
-        url: http://loki.observability.svc.cluster.local:3100
+        url: http://addon-loki.observability.svc.cluster.local:3100
         access: proxy
         isDefault: false
 
