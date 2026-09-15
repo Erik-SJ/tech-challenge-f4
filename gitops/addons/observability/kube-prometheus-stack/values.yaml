@@ -12,10 +12,16 @@ kube-prometheus-stack:
 
     additionalDataSources:
       - name: Loki
+        uid: loki
         type: loki
         url: http://addon-loki.observability.svc.cluster.local:3100
         access: proxy
         isDefault: false
+
+    dashboards:
+      default:
+        kubernetes-ecosystem-health:
+          file: dashboards/kubernetes-ecosystem-health.json	
 
   prometheus:
     enabled: true
