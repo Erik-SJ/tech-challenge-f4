@@ -69,7 +69,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{pod=~\".+\"}"
+          "expr": "{pod=~\"analytics-service-.+|auth-service-.+|evaluation-service-.+|flag-service-.+|targeting-service-.+\"}"
         }
       ],
       "datasource": {
