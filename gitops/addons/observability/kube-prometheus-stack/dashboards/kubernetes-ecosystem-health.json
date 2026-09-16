@@ -69,7 +69,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{}"
+          "expr": "{pod=~\".+\"}"
         }
       ],
       "datasource": {
