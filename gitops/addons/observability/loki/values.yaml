@@ -7,6 +7,13 @@ loki:
     commonConfig:
       replication_factor: 1
 
+    limits_config:
+      retention_period: 168h
+
+    compactor:
+      retention_enabled: true
+      delete_request_store: filesystem  
+
     storage:
       type: filesystem
       filesystem:
