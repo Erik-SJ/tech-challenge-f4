@@ -38,7 +38,7 @@ opentelemetry-collector:
         verbosity: basic
 
       otlphttp/loki:
-        endpoint: http://loki.observability.svc.cluster.local:3100/otlp
+        endpoint: http://addon-loki.observability.svc.cluster.local:3100/otlp
 
     service:
       pipelines:
