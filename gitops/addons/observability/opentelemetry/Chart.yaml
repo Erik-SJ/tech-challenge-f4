@@ -1,0 +1,10 @@
+apiVersion: v2
+name: opentelemetry
+description: OpenTelemetry Collector for Kubernetes observability
+type: application
+version: 1.0.0
+
+dependencies:
+  - name: opentelemetry-collector
+    version: "0.141.0"
+    repository: "https://open-telemetry.github.io/opentelemetry-helm-charts"

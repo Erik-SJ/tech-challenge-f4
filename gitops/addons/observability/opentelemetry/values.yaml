@@ -1,0 +1,51 @@
+opentelemetry-collector:
+  mode: deployment
+
+  image:
+    repository: otel/opentelemetry-collector-contrib
+
+  ports:
+    metrics:
+      enabled: true
+      containerPort: 8888
+      servicePort: 8888
+      protocol: TCP
+
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+
+    processors:
+      batch:
+
+    exporters:
+      debug:
+        verbosity: basic
+
+      otlphttp/loki:
+        endpoint: http://loki.observability.svc.cluster.local:3100/otlp
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [debug]
+
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [debug]
+
+        logs:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlphttp/loki]
+
+  serviceMonitor:
+    enabled: true
+    extraLabels:
+      release: addon-kube-prometheus-stac

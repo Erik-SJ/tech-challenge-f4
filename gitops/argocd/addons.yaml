@@ -12,6 +12,7 @@ spec:
         directories:
           - path: gitops/addons/observability/kube-prometheus-stack
           - path: gitops/addons/observability/loki
+          - path: gitops/addons/observability/opentelemetry
 
   template:
     metadata:
