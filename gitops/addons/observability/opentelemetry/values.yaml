@@ -4,6 +4,11 @@ opentelemetry-collector:
   image:
     repository: otel/opentelemetry-collector-contrib
 
+  serviceMonitor:
+    enabled: true
+    extraLabels:
+      release: addon-kube-prometheus-stac
+
   ports:
     metrics:
       enabled: true
@@ -16,10 +21,17 @@ opentelemetry-collector:
       otlp:
         protocols:
           grpc:
+            endpoint: ${env:MY_POD_IP}:4317
           http:
+            endpoint: ${env:MY_POD_IP}:4318
 
     processors:
-      batch:
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 80
+        spike_limit_percentage: 25
+
+      batch: {}
 
     exporters:
       debug:
@@ -31,21 +43,28 @@ opentelemetry-collector:
     service:
       pipelines:
         traces:
-          receivers: [otlp]
-          processors: [batch]
-          exporters: [debug]
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - batch
+          exporters:
+            - debug
 
         metrics:
-          receivers: [otlp]
-          processors: [batch]
-          exporters: [debug]
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - batch
+          exporters:
+            - debug
 
         logs:
-          receivers: [otlp]
-          processors: [batch]
-          exporters: [otlphttp/loki]
-
-  serviceMonitor:
-    enabled: true
-    extraLabels:
-      release: addon-kube-prometheus-stac
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - batch
+          exporters:
+            - otlphttp/loki
