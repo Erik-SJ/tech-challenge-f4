@@ -7,19 +7,68 @@ import psycopg2
 import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+    OTLPSpanExporter,
+)
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from psycopg2.extras import Json, RealDictCursor
 from psycopg2.pool import SimpleConnectionPool
+
 
 # Configura o logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
+
 # Carrega .env para desenvolvimento local
 load_dotenv()
 
+
+# --- OpenTelemetry ---
+
+def init_tracer():
+    endpoint = os.getenv(
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "localhost:4317",
+    )
+
+    resource = Resource.create(
+        {
+            "service.name": "targeting-service",
+        }
+    )
+
+    tracer_provider = TracerProvider(resource=resource)
+
+    exporter = OTLPSpanExporter(
+        endpoint=endpoint,
+        insecure=True,
+    )
+
+    tracer_provider.add_span_processor(
+        BatchSpanProcessor(exporter)
+    )
+
+    trace.set_tracer_provider(tracer_provider)
+
+    return tracer_provider
+
+
+tracer_provider = init_tracer()
+
 app = Flask(__name__)
 
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
+
+
 # --- Configuração ---
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL")
 
@@ -29,7 +78,9 @@ if not DATABASE_URL or not AUTH_SERVICE_URL:
     )
     sys.exit(1)
 
+
 # --- Pool de Conexão com o Banco ---
+
 try:
     pool = SimpleConnectionPool(1, 5, dsn=DATABASE_URL)
     log.info(
@@ -40,7 +91,8 @@ except psycopg2.OperationalError as e:
     sys.exit(1)
 
 
-# --- Middleware de Autenticação (Idêntico ao flag-service) ---
+# --- Middleware de Autenticação ---
+
 def require_auth(f):
     """Middleware para validar a chave de API contra o auth-service."""
 
@@ -98,6 +150,7 @@ def require_auth(f):
 
 
 # --- Endpoints da API ---
+
 @app.route("/health")
 def health():
     return jsonify({"status": "ok"})
@@ -107,6 +160,7 @@ def health():
 @require_auth
 def create_rule():
     """Cria uma nova regra de segmentação para uma flag."""
+
     data = request.get_json()
 
     if not data or "flag_name" not in data or "rules" not in data:
@@ -198,6 +252,7 @@ def create_rule():
 @require_auth
 def get_rule(flag_name):
     """Busca uma regra de segmentação pelo nome da flag."""
+
     conn = None
     cur = None
 
@@ -239,6 +294,7 @@ def get_rule(flag_name):
 @require_auth
 def update_rule(flag_name):
     """Atualiza a regra de segmentação de uma flag."""
+
     data = request.get_json()
 
     if not data:
@@ -270,7 +326,7 @@ def update_rule(flag_name):
     values.append(flag_name)
 
     query = (
-        f"UPDATE targeting_rules SET {', '.join(fields)} "   # nosec B608
+        f"UPDATE targeting_rules SET {', '.join(fields)} "  # nosec B608
         "WHERE flag_name = %s "
         "RETURNING *"
     )
@@ -326,6 +382,7 @@ def update_rule(flag_name):
 @require_auth
 def delete_rule(flag_name):
     """Deleta a regra de segmentação de uma flag."""
+
     conn = None
     cur = None
 
@@ -376,8 +433,9 @@ def delete_rule(flag_name):
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8003))
+
     app.run(
-        host="0.0.0.0",   # nosec B104
+        host="0.0.0.0",  # nosec B104
         port=port,
         debug=False,
     )
