@@ -18,102 +18,102 @@ module "networking" {
 
 }
 
-module "dynamodb" {
+# module "dynamodb" {
 
-  source = "./modules/dynamodb"
+#   source = "./modules/dynamodb"
 
-  project_name = var.project_name
+#   project_name = var.project_name
 
-  environment = var.environment
+#   environment = var.environment
 
-}
+# }
 
-module "sqs" {
+# module "sqs" {
 
-  source = "./modules/sqs"
+#   source = "./modules/sqs"
 
-  project_name = var.project_name
+#   project_name = var.project_name
 
-  environment = var.environment
+#   environment = var.environment
 
-}
+# }
 
-module "ecr" {
+# module "ecr" {
 
-  source = "./modules/ecr"
+#   source = "./modules/ecr"
 
-  project_name = var.project_name
+#   project_name = var.project_name
 
-  environment = var.environment
+#   environment = var.environment
 
-}
+# }
 
-module "rds" {
+# module "rds" {
 
-  source = "./modules/rds"
+#   source = "./modules/rds"
 
-  project_name = var.project_name
+#   project_name = var.project_name
 
-  environment = var.environment
+#   environment = var.environment
 
-  rds_subnet_group_name = module.networking.rds_subnet_group_name
+#   rds_subnet_group_name = module.networking.rds_subnet_group_name
 
-  rds_security_group_id = module.networking.rds_security_group_id
+#   rds_security_group_id = module.networking.rds_security_group_id
 
-  secret_name = "postgres_credentials"
+#   secret_name = "postgres_credentials"
 
-  depends_on = [
-    module.networking
-  ]
+#   depends_on = [
+#     module.networking
+#   ]
 
-}
+# }
 
-module "db-bootstrap" {
+# module "db-bootstrap" {
 
-  source = "./modules/db-bootstrap"
+#   source = "./modules/db-bootstrap"
 
-  subnet_id = module.networking.eks_public_subnet_ids[0]
+#   subnet_id = module.networking.eks_public_subnet_ids[0]
 
-  security_group_ids = [
-    module.networking.eks_nodes_security_group_id
-  ]
+#   security_group_ids = [
+#     module.networking.eks_nodes_security_group_id
+#   ]
 
-  instance_profile_name = "LabInstanceProfile"
+#   instance_profile_name = "LabInstanceProfile"
 
-  postgres_databases = module.rds.postgres_databases
+#   postgres_databases = module.rds.postgres_databases
 
-  postgres_credentials = module.rds.postgres_credentials
-  postgres_sql_files = {
+#   postgres_credentials = module.rds.postgres_credentials
+#   postgres_sql_files = {
 
-    auth      = file("${path.module}/modules/rds/sql/auth.sql")
-    flag      = file("${path.module}/modules/rds/sql/flag.sql")
-    targeting = file("${path.module}/modules/rds/sql/targeting.sql")
+#     auth      = file("${path.module}/modules/rds/sql/auth.sql")
+#     flag      = file("${path.module}/modules/rds/sql/flag.sql")
+#     targeting = file("${path.module}/modules/rds/sql/targeting.sql")
 
-  }
+#   }
 
-  depends_on = [
-    module.rds
-  ]
+#   depends_on = [
+#     module.rds
+#   ]
 
-}
+# }
 
-module "redis" {
+# module "redis" {
 
-  source = "./modules/redis"
+#   source = "./modules/redis"
 
-  project_name = var.project_name
+#   project_name = var.project_name
 
-  environment = var.environment
+#   environment = var.environment
 
-  redis_subnet_ids = module.networking.redis_subnet_ids
+#   redis_subnet_ids = module.networking.redis_subnet_ids
 
-  redis_security_group_id = module.networking.redis_security_group_id
+#   redis_security_group_id = module.networking.redis_security_group_id
 
-  depends_on = [
-    module.networking
-  ]
+#   depends_on = [
+#     module.networking
+#   ]
 
-}
+# }
 
 module "eks" {
 
