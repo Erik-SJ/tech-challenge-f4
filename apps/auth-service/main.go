@@ -1,82 +1,166 @@
-package main
+﻿package main
 
 import (
-	"database/sql"
-	//"fmt"
-	"log"
-	"net/http"
-	"os"
+        "context"
+        "database/sql"
+        "log"
+        "net/http"
+        "os"
 
-	_ "github.com/jackc/pgx/v4/stdlib"
-	"github.com/joho/godotenv"
+        _ "github.com/jackc/pgx/v4/stdlib"
+        "github.com/joho/godotenv"
+
+        "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+        "go.opentelemetry.io/otel"
+        "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+        "go.opentelemetry.io/otel/propagation"
+        "go.opentelemetry.io/otel/sdk/resource"
+        sdktrace "go.opentelemetry.io/otel/sdk/trace"
+        semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
 )
 
 // App struct (para injeção de dependência)
 type App struct {
-	DB         *sql.DB
-	MasterKey  string
+        DB        *sql.DB
+        MasterKey string
+}
+
+func initTracer(ctx context.Context) (func(context.Context) error, error) {
+        endpoint := os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+
+        if endpoint == "" {
+                endpoint = "localhost:4317"
+        }
+
+        exporter, err := otlptracegrpc.New(
+                ctx,
+                otlptracegrpc.WithEndpoint(endpoint),
+                otlptracegrpc.WithInsecure(),
+        )
+        if err != nil {
+                return nil, err
+        }
+
+        res, err := resource.New(
+                ctx,
+                resource.WithAttributes(
+                        semconv.ServiceName("auth-service"),
+                ),
+        )
+        if err != nil {
+                return nil, err
+        }
+
+        tracerProvider := sdktrace.NewTracerProvider(
+                sdktrace.WithBatcher(exporter),
+                sdktrace.WithResource(res),
+        )
+
+        otel.SetTracerProvider(tracerProvider)
+
+        otel.SetTextMapPropagator(
+                propagation.NewCompositeTextMapPropagator(
+                        propagation.TraceContext{},
+                        propagation.Baggage{},
+                ),
+        )
+
+        return tracerProvider.Shutdown, nil
 }
 
 func main() {
-	// Carrega o .env para desenvolvimento local. Em produção, isso não fará nada.
-	_ = godotenv.Load()
+        _ = godotenv.Load()
 
-	// --- Configuração ---
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8001" // Porta padrão
-	}
+        ctx := context.Background()
 
-	databaseURL := os.Getenv("DATABASE_URL")
-	if databaseURL == "" {
-		log.Fatal("DATABASE_URL deve ser definida")
-	}
+        shutdownTracer, err := initTracer(ctx)
+        if err != nil {
+                log.Fatalf("Não foi possível inicializar o OpenTelemetry: %v", err)
+        }
 
-	masterKey := os.Getenv("MASTER_KEY")
-	if masterKey == "" {
-		log.Fatal("MASTER_KEY deve ser definida")
-	}
+        defer func() {
+                if err := shutdownTracer(context.Background()); err != nil {
+                        log.Printf("Erro ao finalizar OpenTelemetry: %v", err)
+                }
+        }()
 
-	// --- Conexão com o Banco ---
-	db, err := connectDB(databaseURL)
-	if err != nil {
-		log.Fatalf("Não foi possível conectar ao banco de dados: %v", err)
-	}
-	defer db.Close()
+        // --- Configuração ---
+        port := os.Getenv("PORT")
+        if port == "" {
+                port = "8001"
+        }
 
-	app := &App{
-		DB:         db,
-		MasterKey:  masterKey,
-	}
+        databaseURL := os.Getenv("DATABASE_URL")
+        if databaseURL == "" {
+                log.Fatal("DATABASE_URL deve ser definida")
+        }
 
-	// --- Rotas da API ---
-	mux := http.NewServeMux()
-	mux.HandleFunc("/health", app.healthHandler)
+        masterKey := os.Getenv("MASTER_KEY")
+        if masterKey == "" {
+                log.Fatal("MASTER_KEY deve ser definida")
+        }
 
-	// Endpoint público para validar uma chave
-	mux.HandleFunc("/validate", app.validateKeyHandler)
+        // --- Conexão com o Banco ---
+        db, err := connectDB(databaseURL)
+        if err != nil {
+                log.Fatalf("Não foi possível conectar ao banco de dados: %v", err)
+        }
+        defer db.Close()
 
-	// Endpoints de "admin" para criar/gerenciar chaves
-	// Eles são protegidos pelo middleware de autenticação
-	mux.Handle("/admin/keys", app.masterKeyAuthMiddleware(http.HandlerFunc(app.createKeyHandler)))
+        app := &App{
+                DB:        db,
+                MasterKey: masterKey,
+        }
 
-	log.Printf("Serviço de Autenticação (Go) rodando na porta %s", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
-		log.Fatal(err)
-	}
+        // --- Rotas da API ---
+        mux := http.NewServeMux()
+
+        mux.HandleFunc("/health", app.healthHandler)
+
+        mux.Handle(
+                "/validate",
+                otelhttp.NewHandler(
+                        http.HandlerFunc(app.validateKeyHandler),
+                        "auth-service /validate",
+                ),
+        )
+
+        mux.Handle(
+                "/admin/keys",
+                otelhttp.NewHandler(
+                        app.masterKeyAuthMiddleware(
+                                http.HandlerFunc(app.createKeyHandler),
+                        ),
+                        "auth-service /admin/keys",
+                ),
+        )
+
+        handler := otelhttp.NewHandler(
+                mux,
+                "auth-service",
+        )
+
+        log.Printf(
+                "Serviço de Autenticação (Go) rodando na porta %s",
+                port,
+        )
+
+        if err := http.ListenAndServe(":"+port, handler); err != nil {
+                log.Fatal(err)
+        }
 }
 
 // connectDB inicializa e testa a conexão com o PostgreSQL
 func connectDB(databaseURL string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", databaseURL)
-	if err != nil {
-		return nil, err
-	}
+        db, err := sql.Open("pgx", databaseURL)
+        if err != nil {
+                return nil, err
+        }
 
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
+        if err = db.Ping(); err != nil {
+                return nil, err
+        }
 
-	log.Println("Conectado ao PostgreSQL com sucesso!")
-	return db, nil
+        log.Println("Conectado ao PostgreSQL com sucesso!")
+        return db, nil
 }

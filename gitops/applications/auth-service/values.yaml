@@ -19,6 +19,8 @@ externalSecret:
 
 configMap:
   name: auth-config
+  data:
+    OTEL_EXPORTER_OTLP_ENDPOINT: "opentelemetry-collector.observability.svc.cluster.local:4317"
 
 autoscaling:
   enabled: false

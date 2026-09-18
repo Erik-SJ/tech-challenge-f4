@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: "{{ .Values.configMap.name }}"
   namespace: "{{ .Values.namespace }}"
-# data:
-#   DATABASE_URL_AUTH: ""
+data:
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.configMap.data.OTEL_EXPORTER_OTLP_ENDPOINT }}"
