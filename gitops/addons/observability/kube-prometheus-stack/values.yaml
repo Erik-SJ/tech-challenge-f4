@@ -49,6 +49,9 @@ kube-prometheus-stack:
 
       podMonitorSelectorNilUsesHelmValues: false
 
+      ruleSelectorNilUsesHelmValues: false
+      ruleNamespaceSelector: {}
+
   alertmanager:
     enabled: true
 

@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: auth-service-alerts
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: auth-service
+      rules:
+        - alert: AuthServiceHighHTTP5xxRate
+          expr: |
+            (
+              sum(rate(http_requests_total{service="auth-service",status=~"5.."}[5m]))
+              /
+              sum(rate(http_requests_total{service="auth-service"}[5m]))
+            ) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+            service: auth-service
+          annotations:
+            summary: "auth-service com alta taxa de erros HTTP 5xx"
+            description: "A taxa de respostas HTTP 5xx do auth-service está acima de 5% nos últimos 5 minutos."

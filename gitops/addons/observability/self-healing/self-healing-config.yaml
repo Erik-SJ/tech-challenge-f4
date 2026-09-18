@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-self-healing
+  namespace: observability
+data:
+  deployment: auth-service
+  namespace: default
+  action: rollout-restart
