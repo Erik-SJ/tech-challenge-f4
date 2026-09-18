@@ -10,6 +10,16 @@ from flask import Flask, jsonify, request
 from psycopg2.extras import RealDictCursor
 from psycopg2.pool import SimpleConnectionPool
 
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+    OTLPSpanExporter,
+)
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
 # Configura o logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -17,7 +27,45 @@ log = logging.getLogger(__name__)
 # Carrega .env para desenvolvimento local
 load_dotenv()
 
+
+# --- OpenTelemetry ---
+def init_tracer():
+    endpoint = os.getenv(
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "localhost:4317",
+    )
+
+    resource = Resource.create(
+        {
+            "service.name": "flag-service",
+        }
+    )
+
+    exporter = OTLPSpanExporter(
+        endpoint=endpoint,
+        insecure=True,
+    )
+
+    tracer_provider = TracerProvider(
+        resource=resource,
+    )
+
+    tracer_provider.add_span_processor(
+        BatchSpanProcessor(exporter)
+    )
+
+    trace.set_tracer_provider(tracer_provider)
+
+    return tracer_provider
+
+
+tracer_provider = init_tracer()
+
 app = Flask(__name__)
+
+# Instrumentação automática do Flask e requests
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
 
 # --- Configuração ---
 DATABASE_URL = os.getenv("DATABASE_URL")
