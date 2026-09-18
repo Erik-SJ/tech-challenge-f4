@@ -10,6 +10,14 @@ import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import load_dotenv
 from flask import Flask, jsonify
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+    OTLPSpanExporter,
+)
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 # Configura o logging
 logging.basicConfig(
@@ -20,6 +28,39 @@ log = logging.getLogger(__name__)
 
 # Carrega .env para desenvolvimento local
 load_dotenv()
+
+# --- OpenTelemetry ---
+
+def init_tracer():
+    endpoint = os.getenv(
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "localhost:4317",
+    )
+
+    resource = Resource.create(
+        {
+            "service.name": "analytics-service",
+        }
+    )
+
+    tracer_provider = TracerProvider(resource=resource)
+
+    exporter = OTLPSpanExporter(
+        endpoint=endpoint,
+        insecure=True,
+    )
+
+    tracer_provider.add_span_processor(
+        BatchSpanProcessor(exporter)
+    )
+
+    trace.set_tracer_provider(tracer_provider)
+
+    return tracer_provider
+
+
+tracer_provider = init_tracer()
+
 
 # --- Configuração ---
 AWS_REGION = os.getenv("AWS_REGION")
@@ -160,6 +201,8 @@ def sqs_worker_loop():
 
 # --- Servidor Flask (Apenas para Health Check) ---
 app = Flask(__name__)
+
+FlaskInstrumentor().instrument_app(app)
 
 
 @app.route("/health")
