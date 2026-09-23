@@ -4,7 +4,7 @@ replicaCount: 1
 
 image:
   repository: 071200285218.dkr.ecr.us-east-1.amazonaws.com/auth-service
-  tag: "e7eea93"
+  tag: "95dd6ff"
   pullPolicy: Always
 
 service:
