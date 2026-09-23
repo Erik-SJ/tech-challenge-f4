@@ -1,6 +1,6 @@
 aws_region = "us-east-1"
 
-project_name = "fiap-f3"
+project_name = "fiap-f4"
 
 environment = "lab"
 

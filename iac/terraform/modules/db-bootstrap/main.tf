@@ -27,7 +27,7 @@ resource "aws_instance" "bootstrap" {
 
   iam_instance_profile = var.instance_profile_name
 
-  key_name = "key-f3"
+  key_name = "key-f4"
 
   user_data = templatefile("${path.module}/bootstrap.sh.tpl", {
 
