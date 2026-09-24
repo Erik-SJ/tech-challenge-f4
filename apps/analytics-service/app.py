@@ -19,6 +19,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
+
 # Configura o logging
 logging.basicConfig(
     level=logging.INFO,
@@ -30,6 +31,7 @@ log = logging.getLogger(__name__)
 load_dotenv()
 
 # --- OpenTelemetry ---
+
 
 def init_tracer():
     endpoint = os.getenv(
@@ -214,6 +216,7 @@ def health():
 
 # --- Inicialização ---
 
+
 def start_worker():
     """Inicia o worker SQS em uma thread separada."""
     worker_thread = threading.Thread(
@@ -233,7 +236,7 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8005))
 
     app.run(
-        host="0.0.0.0",   # nosec B104
+        host="0.0.0.0",  # nosec B104
         port=port,
         debug=False,
     )
