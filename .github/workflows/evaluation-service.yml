@@ -66,7 +66,7 @@ jobs:
           go-version: "1.25"
   
       - name: Run GolangCI-Lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
           version: v2.1.6
           working-directory: ${{ env.SERVICE_PATH }}       
