@@ -1,0 +1,10 @@
+apiVersion: v2
+name: newrelic-k8s
+description: New Relic Kubernetes monitoring
+type: application
+version: 1.0.0
+
+dependencies:
+  - name: nri-bundle
+    version: "6.0.5"
+    repository: "https://helm-charts.newrelic.com"

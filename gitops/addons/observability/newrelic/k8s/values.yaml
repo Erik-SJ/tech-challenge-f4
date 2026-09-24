@@ -1,0 +1,24 @@
+global:
+  cluster: tech-challenge-f4
+  customSecretName: newrelic-license
+  customSecretLicenseKey: license-key
+
+newrelic-infrastructure:
+  enabled: true
+  customAttributes:
+    environment: lab
+
+kube-state-metrics:
+  enabled: true
+
+nri-metadata-injection:
+  enabled: true
+
+nri-kube-events:
+  enabled: true
+
+newrelic-prometheus-agent:
+  enabled: false
+
+newrelic-logging:
+  enabled: false
