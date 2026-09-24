@@ -3,4 +3,4 @@ dependencies:
   repository: https://helm-charts.newrelic.com
   version: 6.0.5
 digest: sha256:f1a37d7898b07182f9657487d28b9de7e52d587e6edc478057b47d7692f7729a
-generated: "2026-09-24T14:50:26.0308594-03:00"
+generated: "2026-09-24T15:07:53.0913483-03:00"
