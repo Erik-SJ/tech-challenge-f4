@@ -7,7 +7,7 @@ metadata:
     release: kube-prometheus-stack
 spec:
   route:
-    receiver: default
+    receiver: discord
     groupBy:
       - alertname
       - service
@@ -16,4 +16,9 @@ spec:
     repeatInterval: 4h
 
   receivers:
-    - name: default
+    - name: discord
+      discordConfigs:
+        - apiURL:
+            name: discord-webhook
+            key: webhook-url
+          sendResolved: true
