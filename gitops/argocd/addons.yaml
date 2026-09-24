@@ -13,6 +13,7 @@ spec:
           - path: gitops/addons/observability/kube-prometheus-stack
           - path: gitops/addons/observability/loki
           - path: gitops/addons/observability/opentelemetry
+          - path: gitops/addons/observability/newrelic
 
   template:
     metadata:
