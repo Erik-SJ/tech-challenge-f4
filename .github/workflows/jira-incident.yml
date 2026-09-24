@@ -1,0 +1,54 @@
+name: Jira Incident
+
+on:
+  repository_dispatch:
+    types: [alertmanager-jira]
+
+jobs:
+  create-jira-incident:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Jira incident
+        env:
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_URL: https://eriksjacob.atlassian.net
+          JIRA_PROJECT: TCF4
+        run: |
+          ALERT_NAME="${{ github.event.client_payload.alertname }}"
+          SERVICE="${{ github.event.client_payload.service }}"
+          DESCRIPTION="${{ github.event.client_payload.description }}"
+
+          curl --fail --silent --show-error \
+            --request POST \
+            --url "$JIRA_URL/rest/api/3/issue" \
+            --user "$JIRA_EMAIL:$JIRA_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data "{
+              \"fields\": {
+                \"project\": {
+                  \"key\": \"$JIRA_PROJECT\"
+                },
+                \"summary\": \"🚨 $ALERT_NAME - $SERVICE\",
+                \"description\": {
+                  \"type\": \"doc\",
+                  \"version\": 1,
+                  \"content\": [
+                    {
+                      \"type\": \"paragraph\",
+                      \"content\": [
+                        {
+                          \"type\": \"text\",
+                          \"text\": \"$DESCRIPTION\"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                \"issuetype\": {
+                  \"name\": \"Task\"
+                }
+              }
+            }"
