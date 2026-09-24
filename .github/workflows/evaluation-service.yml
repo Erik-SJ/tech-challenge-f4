@@ -36,10 +36,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-           go-version: "1.21"
+           go-version: "1.25"
+
       - name: Download dependencies    
         run: go mod download
  
@@ -61,11 +63,12 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.25"
   
       - name: Run GolangCI-Lint
         uses: golangci/golangci-lint-action@v6
         with:
+          version: v2.1.6
           working-directory: ${{ env.SERVICE_PATH }}       
 
   security-analysis:
@@ -187,5 +190,3 @@ jobs:
         run: |
           echo "Helm values updated successfully."
           echo "ArgoCD will automatically synchronize the application."
-
-          # teste
