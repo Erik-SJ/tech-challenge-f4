@@ -5,6 +5,7 @@ metadata:
   namespace: observability
   labels:
     release: kube-prometheus-stack
+
 spec:
   route:
     receiver: discord
@@ -15,6 +16,10 @@ spec:
     groupInterval: 5m
     repeatInterval: 4h
 
+    routes:
+      - receiver: github-bridge
+        continue: true
+
   receivers:
     - name: discord
       discordConfigs:
@@ -22,3 +27,8 @@ spec:
             name: discord-webhook
             key: webhook-url
           sendResolved: true
+
+    - name: github-bridge
+      webhookConfigs:
+        - url: http://github-bridge.observability.svc.cluster.local:8080/
+          sendResolved: false
