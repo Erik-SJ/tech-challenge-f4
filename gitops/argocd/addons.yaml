@@ -10,7 +10,6 @@ spec:
         repoURL: https://github.com/Erik-SJ/tech-challenge-f4.git
         revision: main
         directories:
-          - path: gitops/addons/observability/kube-prometheus-stack
           - path: gitops/addons/observability/loki
           - path: gitops/addons/observability/opentelemetry
           - path: gitops/addons/observability/newrelic          
