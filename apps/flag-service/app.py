@@ -7,6 +7,7 @@ import psycopg2
 import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+from prometheus_flask_exporter import PrometheusMetrics
 from psycopg2.extras import RealDictCursor
 from psycopg2.pool import SimpleConnectionPool
 
@@ -62,6 +63,7 @@ def init_tracer():
 tracer_provider = init_tracer()
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 
 # Instrumentação automática do Flask e requests
 FlaskInstrumentor().instrument_app(app)
@@ -579,3 +581,4 @@ if __name__ == "__main__":
         port=port,
         debug=False,
     )
+
