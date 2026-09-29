@@ -16,7 +16,7 @@ spec:
               /
               sum(rate(http_requests_total{service="auth-service"}[5m]))
             ) > 0.05
-          for: 5m
+          for: 30s
           labels:
             severity: critical
             service: auth-service
