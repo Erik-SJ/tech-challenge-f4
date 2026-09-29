@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: flag-service
   namespace: "{{ .Values.namespace }}"
+  labels:
+    app: flag-service
 spec:
   type: ClusterIP
   selector:
