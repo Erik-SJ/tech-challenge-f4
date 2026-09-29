@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: flag-service-alerts
+  namespace: observability
+  labels:
+    release: addon-kube-prometheus-stack
+spec:
+  groups:
+    - name: flag-service
+      rules:
+        - alert: FlagServiceHighHTTP5xxRate
+          expr: |
+            (
+              sum(rate(flask_http_request_duration_seconds_count{job="flag-service",status=~"5.."}[30s]))
+              /
+              sum(rate(flask_http_request_duration_seconds_count{job="flag-service"}[30s]))
+            ) > 0.05
+          for: 30s
+          labels:
+            severity: critical
+            service: flag-service
+          annotations:
+            summary: "flag-service com alta taxa de erros HTTP 5xx"
+            description: "A taxa de respostas HTTP 5xx do flag-service está acima de 5% nos últimos 30 segundos."
