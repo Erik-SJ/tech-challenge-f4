@@ -17,6 +17,9 @@ spec:
     repeatInterval: 4h
 
     routes:
+      - receiver: discord
+        continue: true
+
       - receiver: github-bridge
         continue: true
 
