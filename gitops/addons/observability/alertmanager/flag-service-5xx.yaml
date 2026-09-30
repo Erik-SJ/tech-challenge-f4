@@ -12,14 +12,14 @@ spec:
         - alert: FlagServiceHighHTTP5xxRate
           expr: |
             (
-              sum(rate(flask_http_request_duration_seconds_count{job="flag-service",status=~"5.."}[15s]))
+              sum(rate(flask_http_request_duration_seconds_count{job="flag-service",status=~"5.."}[1m]))
               /
-              sum(rate(flask_http_request_duration_seconds_count{job="flag-service"}[15s]))
+              sum(rate(flask_http_request_duration_seconds_count{job="flag-service"}[1m]))
             ) > 0.05
-          for: 5s
+          for: 1s
           labels:
             severity: critical
             service: flag-service
           annotations:
             summary: "flag-service com alta taxa de erros HTTP 5xx"
-            description: "A taxa de respostas HTTP 5xx do flag-service está acima de 5% nos últimos 15 segundos."
+            description: "A taxa de respostas HTTP 5xx do flag-service está acima de 5% nos último minuto."
