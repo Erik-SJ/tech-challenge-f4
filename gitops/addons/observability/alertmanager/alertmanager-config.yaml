@@ -12,8 +12,8 @@ spec:
     groupBy:
       - alertname
       - service
-    groupWait: 30s
-    groupInterval: 5m
+    groupWait: 5s
+    groupInterval: 30s
     repeatInterval: 4h
 
     routes:
