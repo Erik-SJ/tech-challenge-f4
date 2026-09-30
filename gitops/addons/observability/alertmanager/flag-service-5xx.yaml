@@ -18,8 +18,9 @@ spec:
             ) > 0.05
           for: 1s
           labels:
+            namespace: observability
             severity: critical
             service: flag-service
           annotations:
             summary: "flag-service com alta taxa de erros HTTP 5xx"
-            description: "A taxa de respostas HTTP 5xx do flag-service está acima de 5% nos último minuto."
+            description: "A taxa de respostas HTTP 5xx do flag-service esta acima de 5% no ultimo minuto."
