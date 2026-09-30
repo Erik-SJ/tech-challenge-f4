@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
-  name: auth-service-alertmanager
+  name: service-alertmanager
   namespace: observability
   labels:
     release: kube-prometheus-stack
