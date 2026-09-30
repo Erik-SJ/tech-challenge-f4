@@ -20,7 +20,7 @@ externalSecret:
 configMap:
   name: flag-config
   data:
-    AUTH_SERVICE_URL: "http://auth-service"
+    AUTH_SERVICE_URL: "http://auth-service.auth-service.svc.cluster.local"
     OTEL_EXPORTER_OTLP_ENDPOINT: "opentelemetry-collector.observability.svc.cluster.local:4317"
 
 autoscaling:
