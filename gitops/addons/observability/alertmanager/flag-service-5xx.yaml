@@ -16,7 +16,7 @@ spec:
               /
               sum(rate(flask_http_request_duration_seconds_count{job="flag-service"}[30s]))
             ) > 0.05
-          for: 30s
+          for: 10s
           labels:
             severity: critical
             service: flag-service
