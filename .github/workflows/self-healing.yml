@@ -1,0 +1,14 @@
+name: Self-Healing
+
+on:
+  workflow_dispatch:
+
+jobs:
+  self-healing:
+    name: Self-Healing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Start Self-Healing
+        run: |
+          echo "Self-Healing workflow iniciado."
