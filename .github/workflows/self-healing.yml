@@ -24,6 +24,7 @@ jobs:
           echo "Alert: ${{ github.event.client_payload.alertname }}"
           echo "Service: ${{ github.event.client_payload.service }}"
           echo "Description: ${{ github.event.client_payload.description }}"  
+          echo "Jira Incident: ${{ github.event.client_payload.issue_key }}"
           
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
