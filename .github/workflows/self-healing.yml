@@ -81,11 +81,15 @@ jobs:
           echo ""
           echo "Self-Healing concluído com sucesso."
 
+      - name: Debug repository dispatch
+        run: |
+          echo '${{ toJson(github.event.client_payload) }}'    
+
       - name: Trigger Jira Close Incident
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ISSUE_KEY="${{ github.event.client_payload.issue_key }}"
+          ISSUE_KEY="${{ github.event.client_payload.issue_key || '' }}"
           SELF_HEALING_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           if [ -z "$ISSUE_KEY" ]; then
