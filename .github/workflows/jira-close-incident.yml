@@ -1,0 +1,66 @@
+name: Jira Close Incident
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_key:
+        description: "Jira issue key"
+        required: true
+        type: string
+
+jobs:
+  close-jira-incident:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Close Jira incident
+        env:
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_URL: ${{ secrets.JIRA_URL }}
+          ISSUE_KEY: ${{ inputs.issue_key }}
+        run: |
+          echo "Encerrando incidente $ISSUE_KEY..."
+
+          curl --fail --silent --show-error \
+            --request POST \
+            --url "$JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions" \
+            --user "$JIRA_EMAIL:$JIRA_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "transition": {
+                "id": "61"
+              },
+              "fields": {
+                "resolution": {
+                  "id": "10000"
+                }
+              }
+            }'
+
+          curl --fail --silent --show-error \
+            --request POST \
+            --url "$JIRA_URL/rest/api/3/issue/$ISSUE_KEY/comment" \
+            --user "$JIRA_EMAIL:$JIRA_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "body": {
+                "type": "doc",
+                "version": 1,
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Incidente encerrado após a conclusão do tratamento."
+                      }
+                    ]
+                  }
+                ]
+              }
+            }'
+
+          echo "Incidente $ISSUE_KEY encerrado."
