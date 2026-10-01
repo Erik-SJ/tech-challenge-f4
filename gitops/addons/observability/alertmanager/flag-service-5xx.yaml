@@ -12,9 +12,9 @@ spec:
         - alert: FlagServiceHighHTTP5xxRate
           expr: |
             (
-              sum(rate(flask_http_request_duration_seconds_count{job="flag-service",status=~"5.."}[1m]))
+              sum(rate(flask_http_request_duration_seconds_count{job="flag-service",status=~"5.."}[30s]))
               /
-              sum(rate(flask_http_request_duration_seconds_count{job="flag-service"}[1m]))
+              sum(rate(flask_http_request_duration_seconds_count{job="flag-service"}[30s]))
             ) > 0.05
           for: 1s
           labels:
