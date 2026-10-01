@@ -11,6 +11,8 @@ iac/terraform/.terraform/
 iac/terraform/*.tfstate
 iac/terraform/*.tfstate.*
 iac/terraform/.terraform.lock.hcl
+iac/terraform/main.tf
+iac/terraform/terraform.tfvars
 
 # Python
 __pycache__/
