@@ -1,12 +1,8 @@
 name: Jira Close Incident
 
 on:
-  workflow_dispatch:
-    inputs:
-      issue_key:
-        description: "Jira issue key"
-        required: true
-        type: string
+  repository_dispatch:
+    types: [jira-close-incident]
 
 jobs:
   close-jira-incident:
@@ -18,8 +14,7 @@ jobs:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
           JIRA_URL: ${{ secrets.JIRA_URL }}
-          ISSUE_KEY: ${{ inputs.issue_key }}
-          SELF_HEALING_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
         run: |
           echo "Encerrando incidente $ISSUE_KEY..."
 

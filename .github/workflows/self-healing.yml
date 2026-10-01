@@ -80,3 +80,34 @@ jobs:
 
           echo ""
           echo "Self-Healing concluído com sucesso."
+
+      - name: Trigger Jira Close Incident
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_KEY="${{ github.event.client_payload.issue_key }}"
+          SELF_HEALING_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          if [ -z "$ISSUE_KEY" ]; then
+            echo "ISSUE_KEY não informado."
+            exit 1
+          fi
+
+          echo "Solicitando encerramento do Jira $ISSUE_KEY..."
+
+          curl --fail --silent --show-error \
+            --request POST \
+            --url "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --header "Content-Type: application/json" \
+            --data "{
+              \"event_type\": \"jira-close-incident\",
+              \"client_payload\": {
+                \"issue_key\": \"$ISSUE_KEY\",
+                \"self_healing_url\": \"$SELF_HEALING_URL\"
+              }
+            }"
+
+          echo "Solicitação de encerramento enviada para $ISSUE_KEY."    
