@@ -5,7 +5,10 @@ on:
 
   repository_dispatch:
     types:
-      - alertmanager-self-healing
+      - jira-self-healing
+
+permissions:
+  contents: write      
 
 jobs:
   self-healing:

@@ -14,6 +14,8 @@ jobs:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
           JIRA_URL: ${{ secrets.JIRA_URL }}
+          ISSUE_KEY: ${{ github.event.client_payload.issue_key }}
+          SELF_HEALING_URL: ${{ github.event.client_payload.self_healing_url }}
 
         run: |
           echo "Encerrando incidente $ISSUE_KEY..."
