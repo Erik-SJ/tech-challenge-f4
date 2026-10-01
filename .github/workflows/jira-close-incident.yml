@@ -19,6 +19,7 @@ jobs:
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
           JIRA_URL: ${{ secrets.JIRA_URL }}
           ISSUE_KEY: ${{ inputs.issue_key }}
+          SELF_HEALING_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           echo "Encerrando incidente $ISSUE_KEY..."
 
@@ -45,22 +46,31 @@ jobs:
             --user "$JIRA_EMAIL:$JIRA_TOKEN" \
             --header "Accept: application/json" \
             --header "Content-Type: application/json" \
-            --data '{
-              "body": {
-                "type": "doc",
-                "version": 1,
-                "content": [
+            --data "{
+              \"body\": {
+                \"type\": \"doc\",
+                \"version\": 1,
+                \"content\": [
                   {
-                    "type": "paragraph",
-                    "content": [
+                    \"type\": \"paragraph\",
+                    \"content\": [
                       {
-                        "type": "text",
-                        "text": "Incidente encerrado após a conclusão do tratamento."
+                        \"type\": \"text\",
+                        \"text\": \"Incidente encerrado após a execução bem-sucedida do self-healing e normalização do serviço.\"
+                      }
+                    ]
+                  },
+                  {
+                    \"type\": \"paragraph\",
+                    \"content\": [
+                      {
+                        \"type\": \"text\",
+                        \"text\": \"Execução do self-healing: $SELF_HEALING_URL\"
                       }
                     ]
                   }
                 ]
               }
-            }'
+            }"
 
-          echo "Incidente $ISSUE_KEY encerrado."
+          echo "Incidente $ISSUE_KEY encerrado com sucesso."
