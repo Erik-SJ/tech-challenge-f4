@@ -32,9 +32,9 @@ spec:
           sendResolved: true
           title: '{{ if eq .Status "firing" }}🚨{{ else }}✅{{ end }} [{{ .CommonLabels.service }}] - Alta taxa de erros "HTTP 5xx"'
           message: |
-            **Status:** {{ if eq .Status "firing" }}Alerta ativo{{ else }}Alerta resolvido{{ end }}
-            **Serviço:** `{{ .CommonLabels.service }}`
+            **Aplicação:** `{{ .CommonLabels.service }}`
             **Severidade:** `{{ .CommonLabels.severity }}`
+            **Status:** {{ if eq .Status "firing" }}*Alerta ativo*{{ else }}*Alerta resolvido*{{ end }}
 
             {{ if eq .Status "firing" }}**Detalhes:** *A taxa de erros "HTTP 5xx" no {{ .CommonLabels.service }} está elevada, ultrapassando 5% nos últimos 60 segundos.*{{ else }}**Detalhes:** *Esse alerta foi resolvido com a execução do Self-Healing do GitHub Actions.*{{ end }}
 
