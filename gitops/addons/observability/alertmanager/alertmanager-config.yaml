@@ -36,7 +36,7 @@ spec:
             **Serviço:** `{{ .CommonLabels.service }}`
             **Severidade:** `{{ .CommonLabels.severity }}`
 
-            {{ .CommonAnnotations.description }}
+            {{ if eq .Status "firing" }}**Detalhes:** *A taxa de erros "HTTP 5xx" no {{ .CommonLabels.service }} está elevada, ultrapassando 5% nos últimos 60 segundos.*{{ else }}**Detalhes:** *Esse alerta foi resolvido com a execução do Self-Healing do GitHub Actions.*{{ end }}
 
             🔎 [Ver no Prometheus](http://localhost:9090/)
 
