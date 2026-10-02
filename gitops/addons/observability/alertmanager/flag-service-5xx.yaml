@@ -23,4 +23,4 @@ spec:
             service: flag-service
           annotations:
             summary: "flag-service com alta taxa de erros HTTP 5xx"
-            description: "🚨 Alerta: Taxa elevada de erros HTTP 5xx no flag-service. A taxa ultrapassou 5% nos últimos 60 segundos."
+            description: "🚨 Alerta: Taxa elevada de erros \"HTTP 5xx\" no flag-service. A taxa ultrapassou 5% nos últimos 60 segundos."
