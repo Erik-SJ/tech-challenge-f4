@@ -12,77 +12,79 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create Jira incident
-        env:
-          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
-          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
-          JIRA_URL: ${{ secrets.JIRA_URL }}
-          JIRA_PROJECT: TCF4
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          ALERT_NAME="${{ github.event.client_payload.alertname }}"
-          SERVICE="${{ github.event.client_payload.service }}"
-          DESCRIPTION="${{ github.event.client_payload.description }}"
-          SUMMARY="🚨 [$SERVICE] - Alta taxa de erros HTTP 5xx"
-
-          RESPONSE=$(curl --fail --silent --show-error \
-            --request POST \
-            --url "$JIRA_URL/rest/api/3/issue" \
-            --user "$JIRA_EMAIL:$JIRA_TOKEN" \
-            --header "Accept: application/json" \
-            --header "Content-Type: application/json" \
-            --data "{
-              \"fields\": {
-                \"project\": {
-                  \"key\": \"$JIRA_PROJECT\"
-                },
-                \"summary\": \"$SUMMARY\",
-                \"description\": {
-                  \"type\": \"doc\",
-                  \"version\": 1,
-                  \"content\": [
-                    {
-                      \"type\": \"paragraph\",
-                      \"content\": [
-                        {
-                          \"type\": \"text\",
-                          \"text\": \"$DESCRIPTION\"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                \"issuetype\": {
-                  \"name\": \"Task\"
-                }
+    - name: Create Jira incident
+      env:
+        JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+        JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+        JIRA_URL: ${{ secrets.JIRA_URL }}
+        JIRA_PROJECT: TCF4
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ALERT_NAME: ${{ github.event.client_payload.alertname }}
+        SERVICE: ${{ github.event.client_payload.service }}
+        DESCRIPTION: ${{ github.event.client_payload.description }}
+  
+      run: |
+        SUMMARY="🚨 [$SERVICE] - Alta taxa de erros HTTP 5xx"
+  
+        RESPONSE=$(curl --fail --silent --show-error \
+          --request POST \
+          --url "$JIRA_URL/rest/api/3/issue" \
+          --user "$JIRA_EMAIL:$JIRA_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data "{
+            \"fields\": {
+              \"project\": {
+                \"key\": \"$JIRA_PROJECT\"
+              },
+              \"summary\": \"$SUMMARY\",
+              \"description\": {
+                \"type\": \"doc\",
+                \"version\": 1,
+                \"content\": [
+                  {
+                    \"type\": \"paragraph\",
+                    \"content\": [
+                      {
+                        \"type\": \"text\",
+                        \"text\": \"$DESCRIPTION\"
+                      }
+                    ]
+                  }
+                ]
+              },
+              \"issuetype\": {
+                \"name\": \"Task\"
               }
-            }")
-
-          ISSUE_KEY=$(echo "$RESPONSE" | jq -r '.key')
-          if [ -z "$ISSUE_KEY" ] || [ "$ISSUE_KEY" = "null" ]; then
-            echo "Erro: não foi possível obter o ISSUE_KEY."
-            echo "$RESPONSE"
-            exit 1
-          fi
-
-          echo "Incidente criado: $ISSUE_KEY"
-          echo "Acionando Self-Healing..."
-
-          curl --fail --silent --show-error \
-            --request POST \
-            --url "https://api.github.com/repos/${{ github.repository }}/dispatches" \
-            --header "Accept: application/vnd.github+json" \
-            --header "Authorization: Bearer $GITHUB_TOKEN" \
-            --header "X-GitHub-Api-Version: 2022-11-28" \
-            --header "Content-Type: application/json" \
-            --data "{
-              \"event_type\": \"alert-self-healing\",
-              \"client_payload\": {
-                \"alertname\": \"$ALERT_NAME\",
-                \"service\": \"$SERVICE\",
-                \"description\": \"$DESCRIPTION\",
-                \"issue_key\": \"$ISSUE_KEY\"
-              }
-            }"
-
-          echo "Self-Healing acionado para $ISSUE_KEY."
+            }
+          }")
+  
+        ISSUE_KEY=$(echo "$RESPONSE" | jq -r '.key')
+  
+        if [ -z "$ISSUE_KEY" ] || [ "$ISSUE_KEY" = "null" ]; then
+          echo "Erro: não foi possível obter o ISSUE_KEY."
+          echo "$RESPONSE"
+          exit 1
+        fi
+  
+        echo "Incidente criado: $ISSUE_KEY"
+        echo "Acionando Self-Healing..."
+  
+        curl --fail --silent --show-error \
+          --request POST \
+          --url "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+          --header "Accept: application/vnd.github+json" \
+          --header "Authorization: Bearer $GITHUB_TOKEN" \
+          --header "X-GitHub-Api-Version: 2022-11-28" \
+          --header "Content-Type: application/json" \
+          --data "{
+            \"event_type\": \"alert-self-healing\",
+            \"client_payload\": {
+              \"alertname\": \"$ALERT_NAME\",
+              \"service\": \"$SERVICE\",
+              \"description\": \"$DESCRIPTION\",
+              \"issue_key\": \"$ISSUE_KEY\"
+            }
+          }"
+  
+        echo "Self-Healing acionado para $ISSUE_KEY."
