@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: github-bridge
@@ -115,40 +115,6 @@ data:
                         raise RuntimeError(
                             f"GitHub Jira dispatch returned {response.status}"
                         )
-
-                # --------------------------------------------------
-                # 2. Dispatch para Self-Healing
-                #    Somente para o alerta específico
-                # --------------------------------------------------
-                if alertname == "FlagServiceHighHTTP5xxRate":
-                    self_healing_payload = {
-                        "event_type": "alert-self-healing",
-                        "client_payload": {
-                            "alertname": alertname,
-                            "service": service,
-                            "description": description
-                        }
-                    }
-
-                    self_healing_request = urllib.request.Request(
-                        f"https://api.github.com/repos/{GITHUB_REPOSITORY}/dispatches",
-                        data=json.dumps(self_healing_payload).encode(),
-                        headers={
-                            "Authorization": f"Bearer {GITHUB_TOKEN}",
-                            "Accept": "application/vnd.github+json",
-                            "Content-Type": "application/json",
-                            "X-GitHub-Api-Version": "2022-11-28"
-                        },
-                        method="POST"
-                    )
-
-                    with urllib.request.urlopen(
-                        self_healing_request
-                    ) as response:
-                        if response.status not in (200, 201, 204):
-                            raise RuntimeError(
-                                f"GitHub Self-Healing dispatch returned {response.status}"
-                            )
 
                 self.send_response(200)
                 self.end_headers()
