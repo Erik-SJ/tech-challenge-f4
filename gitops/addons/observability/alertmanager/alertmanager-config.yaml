@@ -30,6 +30,15 @@ spec:
             name: discord-webhook
             key: webhook-url
           sendResolved: true
+          title: '{{ if eq .Status "firing" }}🚨{{ else }}✅{{ end }} [{{ .CommonLabels.service }}] - Alta taxa de erros "HTTP 5xx"'
+          message: |
+            **Serviço:** `{{ .CommonLabels.service }}`
+            **Severidade:** `{{ .CommonLabels.severity }}`
+            **Namespace:** `{{ .CommonLabels.namespace }}`
+
+            {{ .CommonAnnotations.description }}
+
+            🔎 [Ver no Prometheus](http://localhost:9090/)
 
     - name: github-bridge
       webhookConfigs:
