@@ -84,10 +84,6 @@ jobs:
           echo ""
           echo "Self-Healing concluído com sucesso."
 
-      - name: Debug repository dispatch
-        run: |
-          echo '${{ toJson(github.event.client_payload) }}'    
-
       - name: Trigger Jira Close Incident
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

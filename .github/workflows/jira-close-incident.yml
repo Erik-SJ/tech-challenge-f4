@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Wait 30 seconds
+        run: |
+          echo "Aguardando 30 segundos antes de fechar o incidente..."
+          sleep 30
+          echo "Tempo de espera concluído."
+
       - name: Close Jira incident
         env:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
