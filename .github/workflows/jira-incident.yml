@@ -1,8 +1,8 @@
-name: Jira Incident
+name: "[Alert]: Open Incident"
 
 on:
   repository_dispatch:
-    types: [alertmanager-jira]
+    types: [alert-open-incident]
 
 permissions:
   contents: write
@@ -23,6 +23,7 @@ jobs:
           ALERT_NAME="${{ github.event.client_payload.alertname }}"
           SERVICE="${{ github.event.client_payload.service }}"
           DESCRIPTION="${{ github.event.client_payload.description }}"
+          SUMMARY="🚨 [$SERVICE] - Alta taxa de erros HTTP 5xx"
 
           RESPONSE=$(curl --fail --silent --show-error \
             --request POST \
@@ -35,7 +36,7 @@ jobs:
                 \"project\": {
                   \"key\": \"$JIRA_PROJECT\"
                 },
-                \"summary\": \"🚨 $ALERT_NAME - $SERVICE\",
+                \"summary\": \"$SUMMARY\",
                 \"description\": {
                   \"type\": \"doc\",
                   \"version\": 1,
@@ -75,7 +76,7 @@ jobs:
             --header "X-GitHub-Api-Version: 2022-11-28" \
             --header "Content-Type: application/json" \
             --data "{
-              \"event_type\": \"jira-self-healing\",
+              \"event_type\": \"alert-self-healing\",
               \"client_payload\": {
                 \"alertname\": \"$ALERT_NAME\",
                 \"service\": \"$SERVICE\",

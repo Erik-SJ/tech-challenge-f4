@@ -1,8 +1,8 @@
-name: Jira Close Incident
+name: "[Alert]: Close Incident"
 
 on:
   repository_dispatch:
-    types: [jira-close-incident]
+    types: [alert-close-incident]
 
 jobs:
   close-jira-incident:

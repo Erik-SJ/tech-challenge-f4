@@ -90,7 +90,7 @@ data:
                 # 1. Dispatch existente para Jira
                 # --------------------------------------------------
                 jira_payload = {
-                    "event_type": "alertmanager-jira",
+                    "event_type": "alert-open-incident",
                     "client_payload": {
                         "alertname": alertname,
                         "service": service,
@@ -122,7 +122,7 @@ data:
                 # --------------------------------------------------
                 if alertname == "FlagServiceHighHTTP5xxRate":
                     self_healing_payload = {
-                        "event_type": "alertmanager-self-healing",
+                        "event_type": "alert-self-healing",
                         "client_payload": {
                             "alertname": alertname,
                             "service": service,
