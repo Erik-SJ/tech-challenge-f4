@@ -10,6 +10,7 @@ import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import load_dotenv
 from flask import Flask, jsonify
+from prometheus_flask_exporter import PrometheusMetrics
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
     OTLPSpanExporter,
@@ -203,7 +204,6 @@ def sqs_worker_loop():
 
 # --- Servidor Flask (Apenas para Health Check) ---
 app = Flask(__name__)
-from prometheus_flask_exporter import PrometheusMetrics
 metrics = PrometheusMetrics(app)
 
 FlaskInstrumentor().instrument_app(app)
