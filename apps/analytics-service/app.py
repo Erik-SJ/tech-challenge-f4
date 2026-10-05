@@ -203,6 +203,8 @@ def sqs_worker_loop():
 
 # --- Servidor Flask (Apenas para Health Check) ---
 app = Flask(__name__)
+from prometheus_flask_exporter import PrometheusMetrics
+metrics = PrometheusMetrics(app)
 
 FlaskInstrumentor().instrument_app(app)
 
