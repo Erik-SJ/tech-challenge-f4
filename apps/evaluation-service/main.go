@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"os"
 	"time"
 
@@ -180,6 +181,9 @@ func main() {
 
 	// --- Rotas ---
 	mux := http.NewServeMux()
+	
+	// Prometheus metrics
+	mux.Handle("/metrics", promhttp.Handler())
 
 	mux.HandleFunc("/health", app.healthHandler)
 

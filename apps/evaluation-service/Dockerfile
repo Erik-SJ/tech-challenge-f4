@@ -1,4 +1,4 @@
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 WORKDIR /src
 
@@ -7,8 +7,11 @@ COPY go.mod go.sum ./
 RUN go get go.opentelemetry.io/otel go.opentelemetry.io/otel/sdk go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc go.opentelemetry.io/otel/propagation go.opentelemetry.io/otel/trace
 
 RUN go mod tidy
+RUN go mod download
+RUN go get github.com/prometheus/client_golang/prometheus/promhttp
 
 COPY . .
+RUN go mod tidy
 
 RUN go build -o evaluation-service .
 
