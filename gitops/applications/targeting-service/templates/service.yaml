@@ -8,5 +8,6 @@ spec:
   selector:
     app: targeting-service
   ports:
-    - port: {{ .Values.service.port }}
+    - name: http
+      port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
