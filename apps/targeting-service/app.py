@@ -7,6 +7,7 @@ import psycopg2
 import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+from prometheus_flask_exporter import PrometheusMetrics
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
     OTLPSpanExporter,
@@ -62,6 +63,7 @@ def init_tracer():
 tracer_provider = init_tracer()
 
 app = Flask(__name__)
+PrometheusMetrics(app)
 
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
