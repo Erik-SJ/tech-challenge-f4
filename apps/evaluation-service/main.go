@@ -4,9 +4,11 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"os"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -26,7 +28,63 @@ import (
 // Contexto global para o Redis
 var ctx = context.Background()
 
-// App struct para injeção de dependência
+var (
+	evaluationRequests = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "evaluation_http_requests_total",
+			Help: "Total de HTTP requests recebidas pelo evaluation-service.",
+		},
+		[]string{"method", "path", "status"},
+	)
+
+	evaluationRequestDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name: "evaluation_http_request_duration_seconds",
+			Help: "Duração das HTTP requests do evaluation-service em segundos.",
+		},
+		[]string{"method", "path"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(evaluationRequests)
+	prometheus.MustRegister(evaluationRequestDuration)
+}
+
+type statusRecorder struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (r *statusRecorder) WriteHeader(statusCode int) {
+	r.statusCode = statusCode
+	r.ResponseWriter.WriteHeader(statusCode)
+}
+
+func metricsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		recorder := &statusRecorder{
+			ResponseWriter: w,
+			statusCode:     http.StatusOK,
+		}
+
+		next.ServeHTTP(recorder, r)
+
+		evaluationRequests.WithLabelValues(
+			r.Method,
+			r.URL.Path,
+			http.StatusText(recorder.statusCode),
+		).Inc()
+
+		evaluationRequestDuration.WithLabelValues(
+			r.Method,
+			r.URL.Path,
+		).Observe(time.Since(start).Seconds())
+	})
+}
+
 type App struct {
 	RedisClient         *redis.Client
 	SqsSvc              *sqs.SQS
@@ -82,7 +140,6 @@ func initTracer(ctx context.Context) (func(context.Context) error, error) {
 func main() {
 	_ = godotenv.Load()
 
-	// Inicializa OpenTelemetry
 	ctx := context.Background()
 
 	shutdownTracer, err := initTracer(ctx)
@@ -96,7 +153,6 @@ func main() {
 		}
 	}()
 
-	// --- Configuração ---
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8004"
@@ -117,7 +173,6 @@ func main() {
 		log.Fatal("TARGETING_SERVICE_URL deve ser definida")
 	}
 
-	// SQS é opcional no dev local, mas obrigatório em prod
 	sqsQueueURL := os.Getenv("AWS_SQS_URL")
 	awsRegion := os.Getenv("AWS_REGION")
 
@@ -129,9 +184,6 @@ func main() {
 		log.Fatal("AWS_REGION deve ser definida para usar SQS")
 	}
 
-	// --- Inicializa Clientes ---
-
-	// Cliente Redis
 	opt, err := redis.ParseURL(redisURL)
 	if err != nil {
 		log.Fatalf("Não foi possível parsear a URL do Redis: %v", err)
@@ -145,7 +197,6 @@ func main() {
 
 	log.Println("Conectado ao Redis com sucesso!")
 
-	// Cliente SQS
 	var sqsSvc *sqs.SQS
 
 	if sqsQueueURL != "" {
@@ -154,7 +205,6 @@ func main() {
 				Region: aws.String(awsRegion),
 			},
 		)
-
 		if err != nil {
 			log.Fatalf("Não foi possível criar sessão AWS: %v", err)
 		}
@@ -164,12 +214,10 @@ func main() {
 		log.Println("Cliente SQS inicializado com sucesso.")
 	}
 
-	// Cliente HTTP
 	httpClient := &http.Client{
 		Timeout: 5 * time.Second,
 	}
 
-	// Cria a instância da App
 	app := &App{
 		RedisClient:         rdb,
 		SqsSvc:              sqsSvc,
@@ -179,20 +227,19 @@ func main() {
 		TargetingServiceURL: targetingSvcURL,
 	}
 
-	// --- Rotas ---
 	mux := http.NewServeMux()
-	
-	// Prometheus metrics
+
 	mux.Handle("/metrics", promhttp.Handler())
 
 	mux.HandleFunc("/health", app.healthHandler)
 
-	// Instrumentação OpenTelemetry da rota principal
 	mux.Handle(
 		"/evaluate",
-		otelhttp.NewHandler(
-			http.HandlerFunc(app.evaluationHandler),
-			"evaluation-service /evaluate",
+		metricsMiddleware(
+			otelhttp.NewHandler(
+				http.HandlerFunc(app.evaluationHandler),
+				"evaluation-service /evaluate",
+			),
 		),
 	)
 
