@@ -16,6 +16,12 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
     OTLPSpanExporter,
 )
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import (
+    OTLPLogExporter,
+)
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -32,6 +38,41 @@ log = logging.getLogger(__name__)
 load_dotenv()
 
 # --- OpenTelemetry ---
+
+
+def init_logging():
+    endpoint = os.getenv(
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "localhost:4317",
+    )
+
+    resource = Resource.create(
+        {
+            "service.name": "analytics-service",
+        }
+    )
+
+    logger_provider = LoggerProvider(resource=resource)
+
+    exporter = OTLPLogExporter(
+        endpoint=endpoint,
+        insecure=True,
+    )
+
+    logger_provider.add_log_record_processor(
+        BatchLogRecordProcessor(exporter)
+    )
+
+    handler = LoggingHandler(
+        level=logging.INFO,
+        logger_provider=logger_provider,
+    )
+
+    logging.getLogger().addHandler(handler)
+
+    LoggingInstrumentor().instrument()
+
+    return logger_provider
 
 
 def init_tracer():
@@ -62,6 +103,7 @@ def init_tracer():
     return tracer_provider
 
 
+logger_provider = init_logging()
 tracer_provider = init_tracer()
 
 
