@@ -21,6 +21,7 @@ configMap:
   name: analytics-config
   data:
     AWS_DYNAMODB_TABLE: "ToggleMasterAnalytics"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "addon-opentelemetry-opentelemetry-collector.observability.svc.cluster.local:4317"
 
 autoscaling:
   enabled: true

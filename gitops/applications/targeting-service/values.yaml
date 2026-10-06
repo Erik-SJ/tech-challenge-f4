@@ -21,6 +21,7 @@ configMap:
   name: targeting-config
   data:
     AUTH_SERVICE_URL: "http://172.20.62.194"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "addon-opentelemetry-opentelemetry-collector.observability.svc.cluster.local:4317"
     
 autoscaling:
   enabled: false  

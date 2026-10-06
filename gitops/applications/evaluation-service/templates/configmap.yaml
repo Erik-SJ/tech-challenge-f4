@@ -6,3 +6,4 @@ metadata:
 data:
   FLAG_SERVICE_URL: "{{ .Values.configMap.data.FLAG_SERVICE_URL }}"
   TARGETING_SERVICE_URL: "{{ .Values.configMap.data.TARGETING_SERVICE_URL }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.configMap.data.OTEL_EXPORTER_OTLP_ENDPOINT }}"

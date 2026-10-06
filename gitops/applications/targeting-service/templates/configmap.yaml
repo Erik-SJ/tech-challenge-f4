@@ -5,3 +5,4 @@ metadata:
   namespace: "{{ .Values.namespace }}"
 data:
   AUTH_SERVICE_URL: {{ .Values.configMap.data.AUTH_SERVICE_URL }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.configMap.data.OTEL_EXPORTER_OTLP_ENDPOINT }}"

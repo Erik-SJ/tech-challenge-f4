@@ -5,3 +5,4 @@ metadata:
   namespace: "{{ .Values.namespace }}"
 data:
   AWS_DYNAMODB_TABLE: "{{ .Values.configMap.data.AWS_DYNAMODB_TABLE }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.configMap.data.OTEL_EXPORTER_OTLP_ENDPOINT }}"
