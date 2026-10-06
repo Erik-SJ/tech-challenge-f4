@@ -1,35 +1,10 @@
 apiVersion: v1
-data:
-  kubernetes-ecosystem-health.json: "{\r\n  \"title\": \"Kubernetes Ecosystem Health\",\r\n
-    \ \"uid\": \"kubernetes-ecosystem-health\",\r\n  \"timezone\": \"browser\",\r\n
-    \ \"schemaVersion\": 39,\r\n  \"version\": 1,\r\n  \"refresh\": \"10s\",\r\n  \"time\":
-    {\r\n    \"from\": \"now-15m\",\r\n    \"to\": \"now\"\r\n  },\r\n  \"panels\":
-    [\r\n    {\r\n      \"id\": 1,\r\n      \"title\": \"Cluster CPU Usage\",\r\n
-    \     \"type\": \"timeseries\",\r\n      \"gridPos\": {\r\n        \"h\": 8,\r\n
-    \       \"w\": 12,\r\n        \"x\": 0,\r\n        \"y\": 0\r\n      },\r\n      \"targets\":
-    [\r\n        {\r\n          \"refId\": \"A\",\r\n          \"expr\": \"100 * (1
-    - avg(rate(node_cpu_seconds_total{mode=\\\"idle\\\"}[5m])))\"\r\n        }\r\n
-    \     ],\r\n      \"fieldConfig\": {\r\n        \"defaults\": {\r\n          \"unit\":
-    \"percent\"\r\n        },\r\n        \"overrides\": []\r\n      }\r\n    },\r\n
-    \   {\r\n      \"id\": 2,\r\n      \"title\": \"Cluster Network Receive Rate\",\r\n
-    \     \"type\": \"timeseries\",\r\n      \"gridPos\": {\r\n        \"h\": 8,\r\n
-    \       \"w\": 12,\r\n        \"x\": 12,\r\n        \"y\": 0\r\n      },\r\n      \"targets\":
-    [\r\n        {\r\n          \"refId\": \"A\",\r\n          \"expr\": \"sum(rate(container_network_receive_bytes_total[5m]))\"\r\n
-    \       }\r\n      ],\r\n      \"fieldConfig\": {\r\n        \"defaults\": {\r\n
-    \         \"unit\": \"Bps\"\r\n        },\r\n        \"overrides\": []\r\n      }\r\n
-    \   },\r\n    {\r\n      \"id\": 3,\r\n      \"title\": \"Cluster Logs\",\r\n
-    \     \"type\": \"logs\",\r\n      \"gridPos\": {\r\n        \"h\": 10,\r\n        \"w\":
-    24,\r\n        \"x\": 0,\r\n        \"y\": 8\r\n      },\r\n      \"targets\":
-    [\r\n        {\r\n          \"refId\": \"A\",\r\n          \"expr\": \"{}\"\r\n
-    \       }\r\n      ],\r\n      \"datasource\": {\r\n        \"type\": \"loki\",\r\n
-    \       \"uid\": \"loki\"\r\n      },\r\n      \"options\": {\r\n        \"showTime\":
-    true,\r\n        \"showLabels\": true,\r\n        \"showCommonLabels\": false,\r\n
-    \       \"wrapLines\": true,\r\n        \"prettifyLogMessage\": false,\r\n        \"enableLogDetails\":
-    true,\r\n        \"deduplication\": \"none\"\r\n      }\r\n    }\r\n  ]\r\n}"
 kind: ConfigMap
 metadata:
-  creationTimestamp: null
   name: kubernetes-ecosystem-health
   namespace: observability
   labels:
     grafana_dashboard: "1"
+data:
+  kubernetes-ecosystem-health.json: |-
+{{ .Files.Get "dashboards/kubernetes-ecosystem-health.json" | nindent 4 }}
