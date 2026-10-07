@@ -1054,12 +1054,12 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{service_name=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"}"
+          "expr": "{service_name=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"} | line_format \"{{.service_name}} | {{.detected_level}} | {{__line__}}\""
         }
       ],
       "options": {
         "showTime": true,
-        "showLabels": true,
+        "showLabels": false,
         "showCommonLabels": false,
         "wrapLines": true,
         "prettifyLogMessage": true,
