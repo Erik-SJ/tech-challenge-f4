@@ -1,5 +1,18 @@
 opentelemetry-collector:
-  mode: deployment
+  mode: daemonset
+
+  clusterRole:
+    create: true
+    rules:
+      - apiGroups: [""]
+        resources:
+          - pods
+          - namespaces
+          - nodes
+        verbs:
+          - get
+          - list
+          - watch
 
   image:
     repository: otel/opentelemetry-collector-contrib
@@ -16,6 +29,22 @@ opentelemetry-collector:
       servicePort: 8888
       protocol: TCP
 
+  extraVolumes:
+    - name: varlogpods
+      hostPath:
+        path: /var/log/pods
+    - name: varlibdockercontainers
+      hostPath:
+        path: /var/lib/docker/containers
+
+  extraVolumeMounts:
+    - name: varlogpods
+      mountPath: /var/log/pods
+      readOnly: true
+    - name: varlibdockercontainers
+      mountPath: /var/lib/docker/containers
+      readOnly: true
+
   config:
     receivers:
       otlp:
@@ -25,11 +54,34 @@ opentelemetry-collector:
           http:
             endpoint: ${env:MY_POD_IP}:4318
 
+      filelog:
+        include:
+          - /var/log/pods/*/*/*.log
+        start_at: end
+        include_file_path: true
+        operators:
+          - type: container
+            id: container-parser
+
     processors:
       memory_limiter:
         check_interval: 5s
         limit_percentage: 80
         spike_limit_percentage: 25
+
+      k8sattributes:
+        auth_type: serviceAccount
+        passthrough: false
+        extract:
+          metadata:
+            - k8s.namespace.name
+            - k8s.pod.name
+            - k8s.container.name
+            - k8s.deployment.name
+          labels:
+            - tag_name: service_name
+              key: app
+              from: pod
 
       batch: {}
 
@@ -63,8 +115,10 @@ opentelemetry-collector:
         logs:
           receivers:
             - otlp
+            - filelog
           processors:
             - memory_limiter
+            - k8sattributes
             - batch
           exporters:
             - otlphttp/loki
