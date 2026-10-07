@@ -1054,7 +1054,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{namespace=~\"$namespace\", service_name=~\"$service\"}"
+          "expr": "{service_name=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"}"
         }
       ],
       "options": {
