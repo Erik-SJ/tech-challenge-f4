@@ -1054,11 +1054,11 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{service_name=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"} | line_format \"{{.service_name}} | {{.detected_level}} | {{__line__}}\""
+          "expr": "{service_name=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"} | regexp `^(?P<source_ip>\\S+) - - \\[(?P<log_time>[^\\]]+)\\] \\\"(?P<request>[^\\\"]+)\\\" (?P<status>\\d+)` | line_format `{{if .request}}[{{.log_time}}] | {{.detected_level}} | {{.service_name}} | Log: \"{{.request}}\" {{.status}} | Source: {{.source_ip}}{{else}}{{.detected_level}} | {{.service_name}} | Log: {{__line__}} | Source: N/A{{end}}`"
         }
       ],
       "options": {
-        "showTime": true,
+        "showTime": false,
         "showLabels": false,
         "showCommonLabels": false,
         "wrapLines": true,
