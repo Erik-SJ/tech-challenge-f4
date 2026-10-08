@@ -1047,12 +1047,12 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{k8s_namespace_name=~\"$namespace\"}"
+          "expr": "{k8s_namespace_name=~\"$namespace\"} | line_format `{{__line__}}`"
         }
       ],
       "options": {
         "showTime": true,
-        "showLabels": true,
+        "showLabels": false,
         "showCommonLabels": false,
         "wrapLines": true,
         "prettifyLogMessage": true,
