@@ -631,7 +631,7 @@
         },
         {
           "refId": "C",
-          "expr": "100 * (sum by (node) ((rate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) + rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m])) * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))) / scalar(sum((rate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) + rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m]))))",
+          "expr": "sum by (node) ((rate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) + rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m])) * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))",
           "format": "table",
           "instant": true
         }
@@ -755,16 +755,16 @@
             "properties": [
               {
                 "id": "unit",
-                "value": "percent"
+                "value": "Bps"
               },
               {
                 "id": "decimals",
-                "value": 1
+                "value": 2
               },
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "gauge"
+                  "type": "auto"
                 }
               }
             ]
