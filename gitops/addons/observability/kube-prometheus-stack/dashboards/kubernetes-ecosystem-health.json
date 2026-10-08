@@ -1,6 +1,12 @@
 {
   "title": "[Tech-Challenge-F4] - Kubernetes & Microservices",
   "uid": "kubernetes-ecosystem-health",
+  "tags": [
+    "tech-challenge-f4",
+    "kubernetes",
+    "microservices",
+    "observability"
+  ],
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 2,
