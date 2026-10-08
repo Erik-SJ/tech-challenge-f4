@@ -628,6 +628,12 @@
           "expr": "100 * (1 - (node_memory_MemAvailable_bytes * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")) / (node_memory_MemTotal_bytes * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")))",
           "format": "table",
           "instant": true
+        },
+        {
+          "refId": "C",
+          "expr": "100 * (sum by (node) ((rate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) + rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m])) * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))) / scalar(sum((rate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) + rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m]))))",
+          "format": "table",
+          "instant": true
         }
       ],
       "transformations": [
@@ -654,7 +660,8 @@
             "renameByName": {
               "node": "Node",
               "Value #A": "CPU Usage",
-              "Value #B": "Memory Usage"
+              "Value #B": "Memory Usage",
+              "Value #C": "Network"
             }
           }
         }
@@ -739,6 +746,28 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Network"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge"
+                }
+              }
+            ]
           }
         ]
       }
@@ -756,19 +785,19 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (node) (rate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))",
-          "legendFormat": "{{node}} RX"
-        },
-        {
-          "refId": "B",
-          "expr": "sum by (node) (rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m]) * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))",
-          "legendFormat": "{{node}} TX"
+          "expr": "sum by (node) ((rate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) + rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m])) * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))",
+          "legendFormat": "{{node}}"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "Bps",
-          "decimals": 2
+          "decimals": 2,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "spanNulls": true
+          }
         },
         "overrides": []
       },
