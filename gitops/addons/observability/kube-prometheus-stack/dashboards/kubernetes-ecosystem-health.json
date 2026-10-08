@@ -1047,7 +1047,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{namespace=~\"$namespace\"}"
+          "expr": "{k8s_namespace_name=~\"$namespace\"}"
         }
       ],
       "options": {
