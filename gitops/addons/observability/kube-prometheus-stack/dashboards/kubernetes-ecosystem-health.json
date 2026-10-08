@@ -587,7 +587,7 @@
         }
       ],
       "fieldConfig": {
-        "defaults": {        
+        "defaults": {
           "unit": "percent",
           "min": 0,
           "max": 100,
@@ -625,7 +625,7 @@
         },
         {
           "refId": "B",
-          "expr": "100 * (1 - (node_memory_MemAvailable_bytes * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")) / (node_memory_MemTotal_bytes * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")))", 
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")) / (node_memory_MemTotal_bytes * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")))",
           "format": "table",
           "instant": true
         }
@@ -744,6 +744,42 @@
       }
     },
     {
+      "id": 24,
+      "type": "timeseries",
+      "title": "Network by Node",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (node) (rate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))",
+          "legendFormat": "{{node}} RX"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (node) (rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m]) * on (instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))",
+          "legendFormat": "{{node}} TX"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right"
+        }
+      }
+    },
+    {
       "id": 30,
       "type": "row",
       "title": "MICROSERVICE TRAFFIC",
@@ -751,7 +787,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 47
       },
       "collapsed": false
     },
@@ -763,7 +799,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 48
       },
       "targets": [
         {
@@ -818,7 +854,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 57
       },
       "targets": [
         {
@@ -861,7 +897,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 59
+        "y": 67
       },
       "targets": [
         {
@@ -916,7 +952,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 59
+        "y": 67
       },
       "targets": [
         {
@@ -958,7 +994,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 67
+        "y": 75
       },
       "collapsed": false
     },
@@ -970,7 +1006,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 68
+        "y": 76
       },
       "targets": [
         {
@@ -998,7 +1034,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 68
+        "y": 76
       },
       "targets": [
         {
@@ -1026,7 +1062,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 77
+        "y": 85
       },
       "collapsed": false
     },
@@ -1038,7 +1074,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 78
+        "y": 86
       },
       "datasource": {
         "type": "loki",
@@ -1069,7 +1105,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 90
+        "y": 98
       },
       "datasource": {
         "type": "loki",
