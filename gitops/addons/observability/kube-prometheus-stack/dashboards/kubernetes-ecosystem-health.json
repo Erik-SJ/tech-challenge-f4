@@ -642,9 +642,16 @@
           "id": "organize",
           "options": {
             "excludeByName": {
-              "Time": true
+              "Time": true,
+              "container": true,
+              "endpoint": true,
+              "job": true,
+              "namespace": true,
+              "pod": true,
+              "service": true
             },
             "renameByName": {
+              "instance": "Node",
               "Value #A": "CPU %",
               "Value #B": "Memory %"
             }
