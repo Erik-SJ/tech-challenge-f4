@@ -661,7 +661,7 @@
               "node": "Node",
               "Value #A": "CPU Usage",
               "Value #B": "Memory Usage",
-              "Value #C": "Network"
+              "Value #C": "Network Traffic"
             }
           }
         }
