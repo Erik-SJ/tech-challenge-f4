@@ -74,7 +74,7 @@
     {
       "id": 1,
       "type": "row",
-      "title": "EXECUTIVE HEALTH",
+      "title": "CLUSTER OVERVIEW",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1021,7 +1021,7 @@
     {
       "id": 50,
       "type": "row",
-      "title": "[Live Logs]",
+      "title": "LIVE LOGS",
       "gridPos": {
         "h": 1,
         "w": 24,
