@@ -764,7 +764,7 @@
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "auto"
+                  "type": "gauge"
                 }
               }
             ]
