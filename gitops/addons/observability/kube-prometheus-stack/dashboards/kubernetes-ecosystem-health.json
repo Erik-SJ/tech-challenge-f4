@@ -1021,7 +1021,7 @@
     {
       "id": 50,
       "type": "row",
-      "title": "LIVE LOGS",
+      "title": "[Live Logs]",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1033,7 +1033,7 @@
     {
       "id": 51,
       "type": "logs",
-      "title": "Kubernetes Cluster Logs",
+      "title": "Kubernetes Logs",
       "gridPos": {
         "h": 12,
         "w": 24,
@@ -1064,7 +1064,7 @@
     {
       "id": 52,
       "type": "logs",
-      "title": "Microservices Live Logs",
+      "title": "Microservices Logs",
       "gridPos": {
         "h": 12,
         "w": 24,
