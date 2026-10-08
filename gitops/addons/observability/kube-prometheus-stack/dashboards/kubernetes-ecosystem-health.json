@@ -750,7 +750,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Network"
+              "options": "Network Traffic"
             },
             "properties": [
               {
