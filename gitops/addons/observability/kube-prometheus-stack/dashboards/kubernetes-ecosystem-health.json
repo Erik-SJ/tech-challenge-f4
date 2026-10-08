@@ -678,6 +678,14 @@
             },
             "properties": [
               {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
                 "id": "unit",
                 "value": "percent"
               },
@@ -717,6 +725,14 @@
               "options": "Memory Usage"
             },
             "properties": [
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
               {
                 "id": "unit",
                 "value": "percent"
