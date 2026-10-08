@@ -684,7 +684,9 @@
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "gauge"
+                  "type": "gauge",
+                  "mode": "gradient",
+                  "valueDisplayMode": "value"
                 }
               },
               {
@@ -722,7 +724,9 @@
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "gauge"
+                  "type": "gauge",
+                  "mode": "gradient",
+                  "valueDisplayMode": "value"
                 }
               },
               {
@@ -770,6 +774,9 @@
             ]
           }
         ]
+      },
+      "options": {
+        "cellHeight": "sm"
       }
     },
     {
