@@ -28,7 +28,7 @@
         "query": "label_values(kube_pod_info, namespace)",
         "includeAll": true,
         "multi": true,
-        "allValue": ".*",
+        "allValue": ".+",
         "current": {
           "text": "All",
           "value": "$__all"
