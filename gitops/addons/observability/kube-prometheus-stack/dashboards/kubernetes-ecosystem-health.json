@@ -551,7 +551,6 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "displayName": "Node",
           "unit": "percent",
           "min": 0,
           "max": 100,
@@ -588,8 +587,7 @@
         }
       ],
       "fieldConfig": {
-        "defaults": {
-          "displayName": "Node",
+        "defaults": {        
           "unit": "percent",
           "min": 0,
           "max": 100,
