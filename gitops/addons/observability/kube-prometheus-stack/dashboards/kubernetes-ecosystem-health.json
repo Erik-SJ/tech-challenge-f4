@@ -1051,7 +1051,7 @@
         }
       ],
       "options": {
-        "showTime": true,
+        "showTime": false,
         "showLabels": false,
         "showCommonLabels": false,
         "wrapLines": true,
