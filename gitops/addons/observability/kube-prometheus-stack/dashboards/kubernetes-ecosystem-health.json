@@ -760,18 +760,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (job) (rate(flask_http_request_total[5m]))",
-          "legendFormat": "{{job}}"
-        },
-        {
-          "refId": "B",
-          "expr": "sum by (job) (rate(http_requests_total{job=\"auth-service\"}[5m]))",
-          "legendFormat": "{{job}}"
-        },
-        {
-          "refId": "C",
-          "expr": "sum by (job) (rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m]))",
-          "legendFormat": "{{job}}"
+          "expr": "sum by (service) (rate(flask_http_request_total{namespace=~\"$namespace\", service=~\"$service\"}[5m]))",
+          "legendFormat": "{{service}}"
         }
       ],
       "fieldConfig": {
