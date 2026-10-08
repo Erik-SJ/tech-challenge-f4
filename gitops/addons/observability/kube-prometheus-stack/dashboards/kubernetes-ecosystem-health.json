@@ -551,6 +551,7 @@
       ],
       "fieldConfig": {
         "defaults": {
+          "displayName": "Node",
           "unit": "percent",
           "min": 0,
           "max": 100,
@@ -560,19 +561,7 @@
             "spanNulls": true
           }
         },
-        "overrides": [
-          { 
-            "matcher": { 
-              "id": "byName", 
-              "options": "Name" 
-            }, 
-            "properties": [ 
-              { "id": "displayName", 
-              "value": "Node" 
-            }
-          ]
-         }
-       ]
+        "overrides": []
       },
       "options": {
         "legend": {
@@ -600,6 +589,7 @@
       ],
       "fieldConfig": {
         "defaults": {
+          "displayName": "Node",
           "unit": "percent",
           "min": 0,
           "max": 100,
@@ -609,19 +599,7 @@
             "spanNulls": true
           }
         },
-        "overrides": [
-          { 
-            "matcher": { 
-              "id": "byName", 
-              "options": "Name" 
-            }, 
-            "properties": [ 
-              { "id": "displayName", 
-              "value": "Node" 
-            }
-          ]
-         }
-       ]
+        "overrides": []
       },
       "options": {
         "legend": {
