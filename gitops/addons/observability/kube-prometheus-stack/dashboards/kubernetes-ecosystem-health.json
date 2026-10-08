@@ -122,7 +122,19 @@
                 "value": 5
               }
             ]
-          }
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "from": 0,
+                "to": 5,
+                "result": {
+                  "text": "${__value} / 5"
+                }
+              }
+            }
+          ]
         },
         "overrides": []
       },
@@ -135,7 +147,7 @@
           "values": false
         },
         "orientation": "auto",
-        "textMode": "auto",
+        "textMode": "value_and_name",
         "colorMode": "background"
       }
     },
