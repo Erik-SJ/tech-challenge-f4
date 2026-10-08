@@ -1054,7 +1054,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{service_name=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"} | regexp `^(?:\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d+ - )?(?P<level>DEBUG|INFO|WARNING|ERROR|CRITICAL) - (?P<source_ip>\\S+) - - \\[[^\\]]+\\] \"(?P<request>[^\"]+)\" (?P<status>\\d+)` | regexp `^(?:\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d+ - )?(?P<level>DEBUG|INFO|WARNING|ERROR|CRITICAL) - (?P<message>.*)$` | line_format `{{if .request}}{{.service_name}} | Log: \"{{.request}}\" {{.status}} | Source: {{.source_ip}}{{else if .message}}{{.service_name}} | Log: {{.message}} | Source: N/A{{else}}{{.service_name}} | Log: {{__line__}} | Source: N/A{{end}}`"
+          "expr": "{k8s_namespace_name=~\"$namespace\", service_name=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"} | regexp `^(?:\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d+ - )?(?P<level>DEBUG|INFO|WARNING|ERROR|CRITICAL) - (?P<source_ip>\\S+) - - \\[[^\\]]+\\] \"(?P<request>[^\"]+)\" (?P<status>\\d+)` | regexp `^(?:\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d+ - )?(?P<level>DEBUG|INFO|WARNING|ERROR|CRITICAL) - (?P<message>.*)$` | line_format `{{if .request}}{{.service_name}} | Log: \"{{.request}}\" {{.status}} | Source: {{.source_ip}}{{else if .message}}{{.service_name}} | Log: {{.message}} | Source: N/A{{else}}{{.service_name}} | Log: {{__line__}} | Source: N/A{{end}}`"
         }
       ],
       "options": {
