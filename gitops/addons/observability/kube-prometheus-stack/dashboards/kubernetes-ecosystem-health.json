@@ -560,7 +560,19 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          { 
+            "matcher": { 
+              "id": "byName", 
+              "options": "Name" 
+            }, 
+            "properties": [ 
+              { "id": "displayName", 
+              "value": "Node" 
+            }
+          ]
+         }
+       ]
       },
       "options": {
         "legend": {
@@ -597,7 +609,19 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          { 
+            "matcher": { 
+              "id": "byName", 
+              "options": "Name" 
+            }, 
+            "properties": [ 
+              { "id": "displayName", 
+              "value": "Node" 
+            }
+          ]
+         }
+       ]
       },
       "options": {
         "legend": {
