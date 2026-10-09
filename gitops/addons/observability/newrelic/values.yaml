@@ -2,6 +2,8 @@ global:
   cluster: tech-challenge-f4
   customSecretName: newrelic-license
   customSecretLicenseKey: license-key
+  customAttributes:
+    environment: lab
 
 newrelic-infrastructure:
   enabled: true
