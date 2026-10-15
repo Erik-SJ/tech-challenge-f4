@@ -928,26 +928,6 @@
             "refId": "A",
             "expr": "sum by (job) (rate(flask_http_request_total[5m]))",
             "legendFormat": "{{job}}"
-          },
-          {
-            "refId": "B",
-            "expr": "0",
-            "legendFormat": "auth-service"
-          },
-          {
-            "refId": "C",
-            "expr": "0",
-            "legendFormat": "flag-service"
-          },
-          {
-            "refId": "D",
-            "expr": "0",
-            "legendFormat": "targeting-service"
-          },
-          {
-            "refId": "E",
-            "expr": "0",
-            "legendFormat": "evaluation-service"
           }
         ],
         "fieldConfig": {
