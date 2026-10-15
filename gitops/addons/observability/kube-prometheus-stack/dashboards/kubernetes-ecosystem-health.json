@@ -1265,7 +1265,7 @@
     {
       "id": 53,
       "type": "table",
-      "title": "MICROSERVICE HEALTH STATUS",
+      "title": "",
       "gridPos": {
         "h": 7,
         "w": 24,
