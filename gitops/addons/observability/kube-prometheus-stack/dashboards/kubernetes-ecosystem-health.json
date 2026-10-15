@@ -254,6 +254,7 @@
                                                         },
                                            "overrides":  [
 
+<<<<<<< HEAD
                                                          ]
                                        },
                        "options":  {
@@ -1431,3 +1432,120 @@
     "graphTooltip":  1,
     "panelsPerRow":  2
 }
+=======
+    {
+      "id": 53,
+      "type": "table",
+      "title": "MICROSERVICE HEALTH STATUS",
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(max by (job) (up{job=\"auth-service\"}) or label_replace(vector(0), \"job\", \"auth-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"flag-service\"}) or label_replace(vector(0), \"job\", \"flag-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"targeting-service\"}) or label_replace(vector(0), \"job\", \"targeting-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"evaluation-service\"}) or label_replace(vector(0), \"job\", \"evaluation-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"analytics-service\"}) or label_replace(vector(0), \"job\", \"analytics-service\", \"__name__\", \".*\"))",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "job": "Name",
+              "Value": "Status"
+            },
+            "indexByName": {
+              "job": 0,
+              "Value": 1
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Name" },
+            "properties": [{ "id": "custom.align", "value": "center" }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [{ "id": "custom.align", "value": "center" }]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "UNHEALTHY",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "HEALTHY",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      }
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "links": [],
+  "editable": true,
+  "graphTooltip": 1,
+  "panelsPerRow": 2
+}
+>>>>>>> parent of 8f77d21 (fix(grafana): center microservice health title)
