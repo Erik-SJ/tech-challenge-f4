@@ -1165,17 +1165,27 @@
         "targets": [
           {
             "refId": "A",
-            "expr": "100 * sum(rate(flask_http_request_total{status=~\"2..\"}[5m])) / sum(rate(flask_http_request_total[5m]))",
-            "legendFormat": "Flask services"
+            "expr": "100 * sum(rate(flask_http_request_total{job=\"analytics-service\",status=~\"2..\"}[5m])) / clamp_min(sum(rate(flask_http_request_total{job=\"analytics-service\"}[5m])), 1e-9)",
+            "legendFormat": "analytics-service"
           },
           {
             "refId": "B",
-            "expr": "100 * sum(rate(http_requests_total{job=\"auth-service\",status=~\"2..\"}[5m])) / sum(rate(http_requests_total{job=\"auth-service\"}[5m]))",
+            "expr": "100 * sum(rate(http_requests_total{job=\"auth-service\",status=~\"2..\"}[5m])) / clamp_min(sum(rate(http_requests_total{job=\"auth-service\"}[5m])), 1e-9)",
             "legendFormat": "auth-service"
           },
           {
             "refId": "C",
-            "expr": "100 * sum(rate(evaluation_http_requests_total{job=\"evaluation-service\",status=~\"2..\"}[5m])) / sum(rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m]))",
+            "expr": "100 * sum(rate(flask_http_request_total{job=\"flag-service\",status=~\"2..\"}[5m])) / clamp_min(sum(rate(flask_http_request_total{job=\"flag-service\"}[5m])), 1e-9)",
+            "legendFormat": "flag-service"
+          },
+          {
+            "refId": "D",
+            "expr": "100 * sum(rate(flask_http_request_total{job=\"targeting-service\",status=~\"2..\"}[5m])) / clamp_min(sum(rate(flask_http_request_total{job=\"targeting-service\"}[5m])), 1e-9)",
+            "legendFormat": "targeting-service"
+          },
+          {
+            "refId": "E",
+            "expr": "100 * sum(rate(evaluation_http_requests_total{job=\"evaluation-service\",status=~\"2..\"}[5m])) / clamp_min(sum(rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m])), 1e-9)",
             "legendFormat": "evaluation-service"
           }
         ],
