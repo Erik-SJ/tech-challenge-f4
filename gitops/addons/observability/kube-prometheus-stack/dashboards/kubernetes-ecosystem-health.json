@@ -1016,7 +1016,32 @@
             "unit": "reqps",
             "decimals": 2
           },
-          "overrides": []
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Microservice"
+              },
+              "properties": [
+                {
+                  "id": "custom.align",
+                  "value": "center"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Request Rate"
+              },
+              "properties": [
+                {
+                  "id": "custom.align",
+                  "value": "center"
+                }
+              ]
+            }
+          ]
         },
         "options": {
           "showHeader": true,
