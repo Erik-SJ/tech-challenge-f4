@@ -1249,7 +1249,19 @@
         "deduplication": "none",
         "sortOrder": "Descending"
       }
+    },    {
+      "id": 54,
+      "type": "row",
+      "title": "MICROSERVICE HEALTH STATUS",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "collapsed": false
     },
+
     {
       "id": 53,
       "type": "table",
@@ -1258,7 +1270,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 6
       },
       "datasource": {
         "type": "prometheus",
