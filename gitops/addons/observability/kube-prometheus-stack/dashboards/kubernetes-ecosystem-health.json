@@ -1253,7 +1253,7 @@
     {
       "id": 53,
       "type": "table",
-      "title": "Microservice Health Status",
+      "title": "MICROSERVICE HEALTH STATUS",
       "gridPos": {
         "h": 7,
         "w": 24,
@@ -1280,7 +1280,7 @@
               "Time": true
             },
             "renameByName": {
-              "job": "TESTE",
+              "job": "Name",
               "Value": "Status"
             },
             "indexByName": {
