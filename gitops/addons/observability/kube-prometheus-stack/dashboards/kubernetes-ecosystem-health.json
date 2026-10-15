@@ -1294,6 +1294,14 @@
         "defaults": {},
         "overrides": [
           {
+            "matcher": { "id": "byName", "options": "Name" },
+            "properties": [{ "id": "custom.align", "value": "center" }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [{ "id": "custom.align", "value": "center" }]
+          },
+          {
             "matcher": {
               "id": "byName",
               "options": "Status"
