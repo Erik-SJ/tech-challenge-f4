@@ -1269,8 +1269,7 @@
           "refId": "A",
           "expr": "(max by (job) (up{job=\"auth-service\"}) or label_replace(vector(0), \"job\", \"auth-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"flag-service\"}) or label_replace(vector(0), \"job\", \"flag-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"targeting-service\"}) or label_replace(vector(0), \"job\", \"targeting-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"evaluation-service\"}) or label_replace(vector(0), \"job\", \"evaluation-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"analytics-service\"}) or label_replace(vector(0), \"job\", \"analytics-service\", \"__name__\", \".*\"))",
           "format": "table",
-          "instant": true,
-          "legendFormat": "{{job}}"
+          "instant": true
         }
       ],
       "transformations": [
@@ -1292,11 +1291,7 @@
         }
       ],
       "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "auto"
-          }
-        },
+        "defaults": {},
         "overrides": [
           {
             "matcher": {
@@ -1326,28 +1321,6 @@
                 "id": "custom.cellOptions",
                 "value": {
                   "type": "color-text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "thresholds"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "red",
-                      "value": null
-                    },
-                    {
-                      "color": "green",
-                      "value": 1
-                    }
-                  ]
                 }
               }
             ]
