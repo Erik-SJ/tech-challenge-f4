@@ -1025,7 +1025,7 @@
               "properties": [
                 {
                   "id": "custom.align",
-                  "value": "center"
+                  "value": "left"
                 }
               ]
             },
@@ -1037,7 +1037,7 @@
               "properties": [
                 {
                   "id": "custom.align",
-                  "value": "center"
+                  "value": "left"
                 }
               ]
             }
