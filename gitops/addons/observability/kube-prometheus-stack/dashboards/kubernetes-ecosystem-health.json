@@ -926,8 +926,28 @@
         "targets": [
           {
             "refId": "A",
-            "expr": "sum by (job) (rate(flask_http_request_total[5m]))",
-            "legendFormat": "{{job}}"
+            "expr": "sum(rate(flask_http_request_total{job=\"analytics-service\"}[5m])) or vector(0)",
+            "legendFormat": "analytics-service"
+          },
+          {
+            "refId": "B",
+            "expr": "sum(rate(http_requests_total{job=\"auth-service\"}[5m])) or vector(0)",
+            "legendFormat": "auth-service"
+          },
+          {
+            "refId": "C",
+            "expr": "sum(rate(flask_http_request_total{job=\"flag-service\"}[5m])) or vector(0)",
+            "legendFormat": "flag-service"
+          },
+          {
+            "refId": "D",
+            "expr": "sum(rate(flask_http_request_total{job=\"targeting-service\"}[5m])) or vector(0)",
+            "legendFormat": "targeting-service"
+          },
+          {
+            "refId": "E",
+            "expr": "sum(rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m])) or vector(0)",
+            "legendFormat": "evaluation-service"
           }
         ],
         "fieldConfig": {
