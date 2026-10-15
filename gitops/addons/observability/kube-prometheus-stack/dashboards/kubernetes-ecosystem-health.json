@@ -1185,7 +1185,7 @@
           },
           {
             "refId": "E",
-            "expr": "100 * sum(rate(evaluation_http_requests_total{job=\"evaluation-service\",status=~\"2..\"}[5m])) / clamp_min(sum(rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m])), 1e-9)",
+            "expr": "100 * sum(rate(evaluation_http_requests_total{job=\"evaluation-service\",status=~\"2..\"}[5m])) / sum(rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m]))",
             "legendFormat": "evaluation-service"
           }
         ],
