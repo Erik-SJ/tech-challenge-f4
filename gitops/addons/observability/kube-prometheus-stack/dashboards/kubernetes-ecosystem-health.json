@@ -96,33 +96,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(max by (job) (up{job=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"}) == 1) or vector(0)",
-          "legendFormat": "Services Healthy"
-        },
-        {
-          "refId": "B",
-          "expr": "max by (job) (up{job=\"auth-service\"}) or label_replace(vector(0), \"job\", \"auth-service\", \"__name__\", \".*\")",
-          "legendFormat": "auth-service"
-        },
-        {
-          "refId": "C",
-          "expr": "max by (job) (up{job=\"flag-service\"}) or label_replace(vector(0), \"job\", \"flag-service\", \"__name__\", \".*\")",
-          "legendFormat": "flag-service"
-        },
-        {
-          "refId": "D",
-          "expr": "max by (job) (up{job=\"targeting-service\"}) or label_replace(vector(0), \"job\", \"targeting-service\", \"__name__\", \".*\")",
-          "legendFormat": "targeting-service"
-        },
-        {
-          "refId": "E",
-          "expr": "max by (job) (up{job=\"evaluation-service\"}) or label_replace(vector(0), \"job\", \"evaluation-service\", \"__name__\", \".*\")",
-          "legendFormat": "evaluation-service"
-        },
-        {
-          "refId": "F",
-          "expr": "max by (job) (up{job=\"analytics-service\"}) or label_replace(vector(0), \"job\", \"analytics-service\", \"__name__\", \".*\")",
-          "legendFormat": "analytics-service"
+          "expr": "sum(max by (job) (up{job=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"}) == 1) or vector(0)"
         }
       ],
       "fieldConfig": {
@@ -229,7 +203,7 @@
           "values": false
         },
         "orientation": "vertical",
-        "textMode": "value_and_name",
+        "textMode": "value",
         "colorMode": "background",
         "graphMode": "none"
       }
@@ -1273,6 +1247,118 @@
         "enableLogDetails": true,
         "deduplication": "none",
         "sortOrder": "Descending"
+      }
+    },
+    {
+      "id": 53,
+      "type": "table",
+      "title": "Microservice Health Status",
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 110
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(max by (job) (up{job=\"auth-service\"}) or label_replace(vector(0), \"job\", \"auth-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"flag-service\"}) or label_replace(vector(0), \"job\", \"flag-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"targeting-service\"}) or label_replace(vector(0), \"job\", \"targeting-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"evaluation-service\"}) or label_replace(vector(0), \"job\", \"evaluation-service\", \"__name__\", \".*\")) or (max by (job) (up{job=\"analytics-service\"}) or label_replace(vector(0), \"job\", \"analytics-service\", \"__name__\", \".*\"))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{job}}"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "job": "Microservice",
+              "Value": "Status"
+            },
+            "indexByName": {
+              "job": 0,
+              "Value": 1
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "UNHEALTHY",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "HEALTHY",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "green",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "md",
+        "footer": {
+          "show": false
+        }
       }
     }
   ],
