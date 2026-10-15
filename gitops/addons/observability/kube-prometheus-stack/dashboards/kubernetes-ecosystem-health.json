@@ -978,29 +978,37 @@
           "x": 0,
           "y": 64
         },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
         "targets": [
           {
             "refId": "A",
-            "expr": "sum by (job) (rate(flask_http_request_total[5m]))",
-            "format": "table",
-            "instant": true
-          },
-          {
-            "refId": "B",
-            "expr": "sum by (job) (rate(http_requests_total{job=\"auth-service\"}[5m]))",
-            "format": "table",
-            "instant": true
-          },
-          {
-            "refId": "C",
-            "expr": "sum by (job) (rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m]))",
+            "expr": "label_replace(sum(rate(flask_http_request_total{job=\"analytics-service\"}[5m])), \"microservice\", \"analytics-service\", \"job\", \".*\") or label_replace(sum(rate(http_requests_total{job=\"auth-service\"}[5m])), \"microservice\", \"auth-service\", \"job\", \".*\") or label_replace(sum(rate(flask_http_request_total{job=\"flag-service\"}[5m])), \"microservice\", \"flag-service\", \"job\", \".*\") or label_replace(sum(rate(flask_http_request_total{job=\"targeting-service\"}[5m])), \"microservice\", \"targeting-service\", \"job\", \".*\") or label_replace(sum(rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m])), \"microservice\", \"evaluation-service\", \"job\", \".*\")",
+            "legendFormat": "{{microservice}}",
             "format": "table",
             "instant": true
           }
         ],
         "transformations": [
           {
-            "id": "merge"
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true,
+                "job": true,
+                "__name__": true
+              },
+              "renameByName": {
+                "microservice": "Microservice",
+                "Value": "Request Rate"
+              },
+              "indexByName": {
+                "microservice": 0,
+                "Value": 1
+              }
+            }
           }
         ],
         "fieldConfig": {
@@ -1009,6 +1017,13 @@
             "decimals": 2
           },
           "overrides": []
+        },
+        "options": {
+          "showHeader": true,
+          "cellHeight": "sm",
+          "footer": {
+            "show": false
+          }
         }
       },
       {
