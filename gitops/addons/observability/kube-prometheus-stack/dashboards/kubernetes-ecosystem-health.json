@@ -386,7 +386,7 @@
         "targets": [
           {
             "refId": "A",
-            "expr": "sum(rate(flask_http_request_total{status=~\"5..\"}[5m])) or sum(rate(http_requests_total{job=\"auth-service\",status=~\"5..\"}[5m])) or sum(rate(evaluation_http_requests_total{job=\"evaluation-service\",status=~\"5..\"}[5m]))"
+            "expr": "sum(rate(flask_http_request_total{status=~\"5..\"}[5m])) + sum(rate(http_requests_total{job=\"auth-service\",status=~\"5..\"}[5m])) + sum(rate(evaluation_http_requests_total{job=\"evaluation-service\",status=~\"5..\"}[5m])) or vector(0)"
           }
         ],
         "fieldConfig": {
@@ -1024,18 +1024,28 @@
         "targets": [
           {
             "refId": "A",
-            "expr": "sum by (job) (rate(flask_http_request_total{status=~\"5..\"}[5m]))",
-            "legendFormat": "{{job}}"
+            "expr": "sum(rate(flask_http_request_total{job=\"analytics-service\",status=~\"5..\"}[5m])) or vector(0)",
+            "legendFormat": "analytics-service"
           },
           {
             "refId": "B",
-            "expr": "sum by (job) (rate(http_requests_total{job=\"auth-service\",status=~\"5..\"}[5m]))",
-            "legendFormat": "{{job}}"
+            "expr": "sum(rate(http_requests_total{job=\"auth-service\",status=~\"5..\"}[5m])) or vector(0)",
+            "legendFormat": "auth-service"
           },
           {
             "refId": "C",
-            "expr": "sum by (job) (rate(evaluation_http_requests_total{job=\"evaluation-service\",status=~\"5..\"}[5m]))",
-            "legendFormat": "{{job}}"
+            "expr": "sum(rate(flask_http_request_total{job=\"flag-service\",status=~\"5..\"}[5m])) or vector(0)",
+            "legendFormat": "flag-service"
+          },
+          {
+            "refId": "D",
+            "expr": "sum(rate(flask_http_request_total{job=\"targeting-service\",status=~\"5..\"}[5m])) or vector(0)",
+            "legendFormat": "targeting-service"
+          },
+          {
+            "refId": "E",
+            "expr": "sum(rate(evaluation_http_requests_total{job=\"evaluation-service\",status=~\"5..\"}[5m])) or vector(0)",
+            "legendFormat": "evaluation-service"
           }
         ],
         "fieldConfig": {
