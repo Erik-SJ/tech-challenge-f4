@@ -985,7 +985,7 @@
         "targets": [
           {
             "refId": "A",
-            "expr": "label_replace(sum(rate(flask_http_request_total{job=\"analytics-service\"}[5m])), \"microservice\", \"analytics-service\", \"job\", \".*\") or label_replace(sum(rate(http_requests_total{job=\"auth-service\"}[5m])), \"microservice\", \"auth-service\", \"job\", \".*\") or label_replace(sum(rate(flask_http_request_total{job=\"flag-service\"}[5m])), \"microservice\", \"flag-service\", \"job\", \".*\") or label_replace(sum(rate(flask_http_request_total{job=\"targeting-service\"}[5m])), \"microservice\", \"targeting-service\", \"job\", \".*\") or label_replace(sum(rate(evaluation_http_requests_total{job=\"evaluation-service\"}[5m])), \"microservice\", \"evaluation-service\", \"job\", \".*\")",
+            "expr": "label_replace(sum(rate(flask_http_request_total{job=\"analytics-service\"}[5m])), \"microservice\", \"analytics-service\", \"job\", \".*\") or label_replace(sum(rate(http_requests_total{job=\"auth-service\"}[5m])), \"microservice\", \"auth-service\", \"job\", \".*\") or label_replace(sum(rate(flask_http_request_total{job=\"flag-service\"}[5m])), \"microservice\", \"flag-service\", \"job\", \".*\") or label_replace(sum(rate(flask_http_request_total{job=\"targeting-service\"}[5m])), \"microservice\", \"targeting-service\", \"job\", \".*\") or label_replace(up{job=\"evaluation-service\"}, \"microservice\", \"evaluation-service\", \"job\", \".*\")",
             "legendFormat": "{{microservice}}",
             "format": "table",
             "instant": true
