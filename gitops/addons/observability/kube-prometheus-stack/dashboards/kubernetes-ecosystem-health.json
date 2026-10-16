@@ -328,7 +328,7 @@
       {
         "id": 5,
         "type": "stat",
-        "title": "HTTP Requests / sec",
+        "title": "HTTP Requests Rate",
         "gridPos": {
           "h": 4,
           "w": 4,
