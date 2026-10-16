@@ -97,8 +97,7 @@
           {
             "refId": "A",
             "expr": "sum(max by (job) (up{job=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"}) == 1) or vector(0)",
-            "legendFormat": "Services Healthy"
-          },
+            "legendFormat": "Services Healthy",
             "instant": true
           }
         ],
