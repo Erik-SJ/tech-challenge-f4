@@ -1,6 +1,11 @@
 opentelemetry-collector:
   mode: daemonset
 
+  service:
+    enabled: true
+    type: ClusterIP
+    internalTrafficPolicy: Cluster
+
   clusterRole:
     create: true
     rules:
