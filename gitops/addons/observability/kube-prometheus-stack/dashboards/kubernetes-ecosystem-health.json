@@ -10,7 +10,7 @@
     "timezone": "browser",
     "schemaVersion": 39,
     "version": 2,
-    "refresh": "10s",
+    "refresh": "5s",
     "time": {
       "from": "now-30m",
       "to": "now"
@@ -98,6 +98,8 @@
             "refId": "A",
             "expr": "sum(max by (job) (up{job=~\"auth-service|flag-service|targeting-service|evaluation-service|analytics-service\"}) == 1) or vector(0)",
             "legendFormat": "Services Healthy"
+          },
+            "instant": true
           }
         ],
         "fieldConfig": {
