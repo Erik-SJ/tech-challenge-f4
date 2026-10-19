@@ -20,8 +20,8 @@ externalSecret:
 configMap:
   name: evaluation-config
   data:
-    FLAG_SERVICE_URL: "http://172.20.227.36"
-    TARGETING_SERVICE_URL: "http://172.20.62.194"
+    FLAG_SERVICE_URL: "http://flag-service.flag-service.svc.cluster.local"
+    TARGETING_SERVICE_URL: "http://targeting-service.targeting-service.svc.cluster.local"
     OTEL_EXPORTER_OTLP_ENDPOINT: "addon-opentelemetry-opentelemetry-collector.observability.svc.cluster.local:4317"
 
 autoscaling:
