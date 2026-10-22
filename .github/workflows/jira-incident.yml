@@ -20,8 +20,7 @@ jobs:
         JIRA_PROJECT: TCF4
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ALERT_NAME: ${{ github.event.client_payload.alertname }}
-        #SERVICE: ${{ github.event.client_payload.service }}
-        SERVICE: "flag-service"
+        SERVICE: ${{ github.event.client_payload.service }}
         DESCRIPTION: ${{ github.event.client_payload.description }}
     
       run: |
