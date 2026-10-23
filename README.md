@@ -1,4 +1,4 @@
-# Tech Challenge Fase 4 — FIAP
+# [FIAP] - Tech Challenge F4
 
 Repositório referente ao desenvolvimento do Tech Challenge da Fase 4 da FIAP, contemplando a infraestrutura como código, a aplicação baseada em microsserviços, a automação de pipelines CI/CD, a implantação em Kubernetes e as práticas de observabilidade.
 
